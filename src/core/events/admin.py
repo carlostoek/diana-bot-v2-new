@@ -15,11 +15,11 @@ from .base import DomainEvent, EventCategory, SystemEvent
 class UserRegisteredEvent(DomainEvent):
     """
     Event fired when a new user registers with the bot.
-    
+
     This is a fundamental user lifecycle event that triggers onboarding,
     initial gamification setup, and analytics tracking.
     """
-    
+
     def __init__(
         self,
         user_id: int,
@@ -30,11 +30,11 @@ class UserRegisteredEvent(DomainEvent):
         is_bot: bool = False,
         source_service: str = "telegram_adapter",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize UserRegisteredEvent.
-        
+
         Args:
             user_id: Telegram user ID
             telegram_data: Raw Telegram user data
@@ -54,7 +54,7 @@ class UserRegisteredEvent(DomainEvent):
             "language_code": telegram_data.get("language_code"),
             "is_premium": telegram_data.get("is_premium", False),
         }
-        
+
         payload = {
             "telegram_data": safe_telegram_data,
             "registration_source": registration_source,
@@ -67,69 +67,71 @@ class UserRegisteredEvent(DomainEvent):
             "initial_points_awarded": None,
             "referrer_user_id": None,
         }
-        
+
         super().__init__(
             user_id=user_id,
             source_service=source_service,
             correlation_id=correlation_id,
             priority=EventPriority.HIGH,  # New user registration is important
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def telegram_data(self) -> Dict[str, Any]:
         """Safe Telegram user data."""
         return self.payload["telegram_data"]
-    
+
     @property
     def registration_source(self) -> str:
         """How the user registered."""
         return self.payload["registration_source"]
-    
+
     @property
     def referral_code(self) -> Optional[str]:
         """Referral code used."""
         return self.payload.get("referral_code")
-    
+
     @property
     def initial_language(self) -> str:
         """User's initial language."""
         return self.payload["initial_language"]
-    
+
     @property
     def username(self) -> Optional[str]:
         """Telegram username."""
         return self.telegram_data.get("username")
-    
+
     @property
     def first_name(self) -> Optional[str]:
         """User's first name."""
         return self.telegram_data.get("first_name")
-    
+
     def _get_event_category(self) -> EventCategory:
         """User registration events belong to the USER category."""
         return EventCategory.USER
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate user registration specific requirements."""
         super()._custom_validation(errors)
-        
+
         if not isinstance(self.telegram_data, dict):
             errors.append("Telegram data must be a dictionary")
-        
-        if not self.registration_source or not isinstance(self.registration_source, str):
+
+        if not self.registration_source or not isinstance(
+            self.registration_source, str
+        ):
             errors.append("Registration source must be a non-empty string")
 
 
 class UserBannedEvent(DomainEvent):
     """
     Event fired when a user is banned from the bot.
-    
+
     This is a critical administrative event that affects user access
     and triggers cleanup procedures.
     """
-    
+
     def __init__(
         self,
         user_id: int,
@@ -141,11 +143,11 @@ class UserBannedEvent(DomainEvent):
         automatic_ban: bool = False,
         source_service: str = "admin",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize UserBannedEvent.
-        
+
         Args:
             user_id: ID of the banned user
             banned_by_admin_id: ID of the admin who issued the ban
@@ -161,8 +163,11 @@ class UserBannedEvent(DomainEvent):
         ban_expires_at = None
         if ban_type == "temporary" and ban_duration_hours:
             from datetime import timedelta
-            ban_expires_at = (datetime.utcnow() + timedelta(hours=ban_duration_hours)).isoformat()
-        
+
+            ban_expires_at = (
+                datetime.utcnow() + timedelta(hours=ban_duration_hours)
+            ).isoformat()
+
         payload = {
             "banned_by_admin_id": banned_by_admin_id,
             "ban_reason": ban_reason,
@@ -176,55 +181,55 @@ class UserBannedEvent(DomainEvent):
             "previous_violations": None,
             "ban_appeal_allowed": None,
         }
-        
+
         super().__init__(
             user_id=user_id,
             source_service=source_service,
             correlation_id=correlation_id,
             priority=EventPriority.CRITICAL,  # Bans are critical events
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def banned_by_admin_id(self) -> int:
         """ID of the admin who issued the ban."""
         return self.payload["banned_by_admin_id"]
-    
+
     @property
     def ban_reason(self) -> str:
         """Reason for the ban."""
         return self.payload["ban_reason"]
-    
+
     @property
     def ban_type(self) -> str:
         """Type of ban."""
         return self.payload["ban_type"]
-    
+
     @property
     def is_permanent(self) -> bool:
         """Whether this is a permanent ban."""
         return self.ban_type == "permanent"
-    
+
     @property
     def automatic_ban(self) -> bool:
         """Whether this was an automatic ban."""
         return self.payload["automatic_ban"]
-    
+
     def _get_event_category(self) -> EventCategory:
         """User ban events belong to the ADMIN category."""
         return EventCategory.ADMIN
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate user banned specific requirements."""
         super()._custom_validation(errors)
-        
+
         if not isinstance(self.banned_by_admin_id, int) or self.banned_by_admin_id <= 0:
             errors.append("Banned by admin ID must be a positive integer")
-        
+
         if not self.ban_reason or not isinstance(self.ban_reason, str):
             errors.append("Ban reason must be a non-empty string")
-        
+
         valid_ban_types = {"temporary", "permanent", "shadow"}
         if self.ban_type not in valid_ban_types:
             errors.append(f"Ban type must be one of {valid_ban_types}")
@@ -233,11 +238,11 @@ class UserBannedEvent(DomainEvent):
 class ContentModerationEvent(SystemEvent):
     """
     Event fired when content is moderated (approved, rejected, flagged).
-    
+
     This event tracks all content moderation activities for
     audit purposes and pattern detection.
     """
-    
+
     def __init__(
         self,
         content_id: str,
@@ -251,11 +256,11 @@ class ContentModerationEvent(SystemEvent):
         affected_user_id: Optional[int] = None,
         source_service: str = "moderation",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize ContentModerationEvent.
-        
+
         Args:
             content_id: ID of the moderated content
             content_type: Type of content being moderated
@@ -282,56 +287,60 @@ class ContentModerationEvent(SystemEvent):
             "affected_user_id": affected_user_id,
             "moderated_at": datetime.utcnow().isoformat(),
         }
-        
+
         # Higher priority for rejections and flags
-        priority = EventPriority.HIGH if moderation_action in ("rejected", "flagged", "deleted") else EventPriority.NORMAL
-        
+        priority = (
+            EventPriority.HIGH
+            if moderation_action in ("rejected", "flagged", "deleted")
+            else EventPriority.NORMAL
+        )
+
         super().__init__(
             source_service=source_service,
             system_component="content_moderation",
             correlation_id=correlation_id,
             priority=priority,
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def content_id(self) -> str:
         """ID of the moderated content."""
         return self.payload["content_id"]
-    
+
     @property
     def content_type(self) -> str:
         """Type of content."""
         return self.payload["content_type"]
-    
+
     @property
     def moderation_action(self) -> str:
         """Action taken."""
         return self.payload["moderation_action"]
-    
+
     @property
     def automatic_moderation(self) -> bool:
         """Whether this was automatic."""
         return self.payload["automatic_moderation"]
-    
+
     @property
     def affected_user_id(self) -> Optional[int]:
         """ID of affected user."""
         return self.payload.get("affected_user_id")
-    
+
     def _get_event_category(self) -> EventCategory:
         """Content moderation events belong to the ADMIN category."""
         return EventCategory.ADMIN
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate content moderation specific requirements."""
         if not self.content_id or not isinstance(self.content_id, str):
             errors.append("Content ID must be a non-empty string")
-        
+
         if not self.content_type or not isinstance(self.content_type, str):
             errors.append("Content type must be a non-empty string")
-        
+
         valid_actions = {"approved", "rejected", "flagged", "deleted", "quarantined"}
         if self.moderation_action not in valid_actions:
             errors.append(f"Moderation action must be one of {valid_actions}")
@@ -340,11 +349,11 @@ class ContentModerationEvent(SystemEvent):
 class AnalyticsEvent(SystemEvent):
     """
     Event fired to record analytics data for business intelligence.
-    
+
     This event aggregates user behavior, system performance,
     and business metrics for reporting and analysis.
     """
-    
+
     def __init__(
         self,
         metric_name: str,
@@ -356,11 +365,11 @@ class AnalyticsEvent(SystemEvent):
         user_segment: Optional[str] = None,
         source_service: str = "analytics",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize AnalyticsEvent.
-        
+
         Args:
             metric_name: Name of the metric being recorded
             metric_value: Value of the metric
@@ -378,53 +387,55 @@ class AnalyticsEvent(SystemEvent):
             "metric_value": metric_value,
             "metric_type": metric_type,
             "dimensions": dimensions or {},
-            "timestamp_override": timestamp_override.isoformat() if timestamp_override else None,
+            "timestamp_override": timestamp_override.isoformat()
+            if timestamp_override
+            else None,
             "aggregation_period": aggregation_period,
             "user_segment": user_segment,
             "recorded_at": datetime.utcnow().isoformat(),
         }
-        
+
         super().__init__(
             source_service=source_service,
             system_component="analytics",
             correlation_id=correlation_id,
             priority=EventPriority.LOW,  # Analytics events are low priority
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def metric_name(self) -> str:
         """Name of the metric."""
         return self.payload["metric_name"]
-    
+
     @property
     def metric_value(self) -> float:
         """Value of the metric."""
         return self.payload["metric_value"]
-    
+
     @property
     def metric_type(self) -> str:
         """Type of metric."""
         return self.payload["metric_type"]
-    
+
     @property
     def dimensions(self) -> Dict[str, str]:
         """Additional dimensions."""
         return self.payload["dimensions"]
-    
+
     def _get_event_category(self) -> EventCategory:
         """Analytics events belong to the ADMIN category."""
         return EventCategory.ADMIN
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate analytics specific requirements."""
         if not self.metric_name or not isinstance(self.metric_name, str):
             errors.append("Metric name must be a non-empty string")
-        
+
         if not isinstance(self.metric_value, (int, float)):
             errors.append("Metric value must be a number")
-        
+
         valid_types = {"counter", "gauge", "histogram", "timer"}
         if self.metric_type not in valid_types:
             errors.append(f"Metric type must be one of {valid_types}")
@@ -433,11 +444,11 @@ class AnalyticsEvent(SystemEvent):
 class AdminActionPerformedEvent(SystemEvent):
     """
     Event fired when an admin performs any administrative action.
-    
+
     This event provides a complete audit trail of all
     administrative operations for security and compliance.
     """
-    
+
     def __init__(
         self,
         admin_user_id: int,
@@ -451,11 +462,11 @@ class AdminActionPerformedEvent(SystemEvent):
         user_agent: Optional[str] = None,
         source_service: str = "admin",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize AdminActionPerformedEvent.
-        
+
         Args:
             admin_user_id: ID of the admin performing the action
             action_type: Type of action (create, update, delete, ban, etc.)
@@ -482,61 +493,67 @@ class AdminActionPerformedEvent(SystemEvent):
             "user_agent": user_agent,
             "performed_at": datetime.utcnow().isoformat(),
         }
-        
+
         super().__init__(
             source_service=source_service,
             system_component="admin_panel",
             correlation_id=correlation_id,
             priority=EventPriority.HIGH,  # Admin actions are important
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def admin_user_id(self) -> int:
         """ID of the admin."""
         return self.payload["admin_user_id"]
-    
+
     @property
     def action_type(self) -> str:
         """Type of action."""
         return self.payload["action_type"]
-    
+
     @property
     def action_description(self) -> str:
         """Description of the action."""
         return self.payload["action_description"]
-    
+
     @property
     def target_resource_type(self) -> str:
         """Type of target resource."""
         return self.payload["target_resource_type"]
-    
+
     @property
     def action_result(self) -> str:
         """Result of the action."""
         return self.payload["action_result"]
-    
+
     @property
     def was_successful(self) -> bool:
         """Whether the action was successful."""
         return self.action_result == "success"
-    
+
     def _get_event_category(self) -> EventCategory:
         """Admin action events belong to the ADMIN category."""
         return EventCategory.ADMIN
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate admin action specific requirements."""
         if not isinstance(self.admin_user_id, int) or self.admin_user_id <= 0:
             errors.append("Admin user ID must be a positive integer")
-        
-        required_string_fields = ["action_type", "action_description", "target_resource_type"]
+
+        required_string_fields = [
+            "action_type",
+            "action_description",
+            "target_resource_type",
+        ]
         for field in required_string_fields:
             value = getattr(self, field)
             if not value or not isinstance(value, str):
-                errors.append(f"{field.replace('_', ' ').title()} must be a non-empty string")
-        
+                errors.append(
+                    f"{field.replace('_', ' ').title()} must be a non-empty string"
+                )
+
         valid_results = {"success", "failure", "partial"}
         if self.action_result not in valid_results:
             errors.append(f"Action result must be one of {valid_results}")
@@ -545,11 +562,11 @@ class AdminActionPerformedEvent(SystemEvent):
 class SystemMaintenanceEvent(SystemEvent):
     """
     Event fired during system maintenance operations.
-    
+
     This event tracks maintenance windows, updates,
     and system changes for operational visibility.
     """
-    
+
     def __init__(
         self,
         maintenance_type: str,  # scheduled, emergency, update, backup
@@ -562,11 +579,11 @@ class SystemMaintenanceEvent(SystemEvent):
         performed_by: Optional[str] = None,
         source_service: str = "system",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize SystemMaintenanceEvent.
-        
+
         Args:
             maintenance_type: Type of maintenance
             maintenance_description: Description of what's being done
@@ -586,49 +603,57 @@ class SystemMaintenanceEvent(SystemEvent):
             "maintenance_status": maintenance_status,
             "affected_services": affected_services or [],
             "estimated_duration_minutes": estimated_duration_minutes,
-            "maintenance_window_start": maintenance_window_start.isoformat() if maintenance_window_start else None,
-            "maintenance_window_end": maintenance_window_end.isoformat() if maintenance_window_end else None,
+            "maintenance_window_start": maintenance_window_start.isoformat()
+            if maintenance_window_start
+            else None,
+            "maintenance_window_end": maintenance_window_end.isoformat()
+            if maintenance_window_end
+            else None,
             "performed_by": performed_by,
             "event_timestamp": datetime.utcnow().isoformat(),
         }
-        
+
         # Critical if emergency maintenance
-        priority = EventPriority.CRITICAL if maintenance_type == "emergency" else EventPriority.HIGH
-        
+        priority = (
+            EventPriority.CRITICAL
+            if maintenance_type == "emergency"
+            else EventPriority.HIGH
+        )
+
         super().__init__(
             source_service=source_service,
             system_component="maintenance",
             correlation_id=correlation_id,
             priority=priority,
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def maintenance_type(self) -> str:
         """Type of maintenance."""
         return self.payload["maintenance_type"]
-    
+
     @property
     def maintenance_status(self) -> str:
         """Status of maintenance."""
         return self.payload["maintenance_status"]
-    
+
     @property
     def affected_services(self) -> List[str]:
         """Services affected by maintenance."""
         return self.payload["affected_services"]
-    
+
     def _get_event_category(self) -> EventCategory:
         """Maintenance events belong to the ADMIN category."""
         return EventCategory.ADMIN
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate maintenance event specific requirements."""
         valid_types = {"scheduled", "emergency", "update", "backup", "patch"}
         if self.maintenance_type not in valid_types:
             errors.append(f"Maintenance type must be one of {valid_types}")
-        
+
         valid_statuses = {"started", "completed", "failed", "cancelled", "in_progress"}
         if self.maintenance_status not in valid_statuses:
             errors.append(f"Maintenance status must be one of {valid_statuses}")

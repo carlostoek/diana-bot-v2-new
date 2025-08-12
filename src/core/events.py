@@ -27,13 +27,14 @@ from .interfaces import (
 # Dynamic imports to avoid circular dependencies
 # These will be loaded on-demand when needed
 
+
 # Deprecation warning helper
 def _deprecation_warning(old_class_name: str, new_class_name: str):
     """Issue deprecation warning for old event classes."""
     warnings.warn(
         f"{old_class_name} is deprecated. Use {new_class_name} from src.core.events instead.",
         DeprecationWarning,
-        stacklevel=3
+        stacklevel=3,
     )
 
 
@@ -640,12 +641,13 @@ class EventFactory:
             # Try to use new event system first
             try:
                 from .events.catalog import event_catalog
+
                 route = event_catalog.get_route_by_event_type(event_type)
                 if route:
                     return route.event_class.from_dict(data)
             except Exception:
                 pass
-            
+
             # Fallback to BaseEvent for unknown types
             return BaseEvent.from_dict(data)
 
@@ -653,9 +655,10 @@ class EventFactory:
 # Compatibility Wrappers for Backward Compatibility
 # These provide the same interface as the old events but delegate to new implementations
 
+
 class PointsAwardedEventCompat(PointsAwardedEvent):
     """Backward compatibility wrapper for PointsAwardedEvent."""
-    
+
     def __init__(self, *args, **kwargs):
         _deprecation_warning("PointsAwardedEvent", "NewPointsAwardedEvent")
         super().__init__(*args, **kwargs)
@@ -663,15 +666,15 @@ class PointsAwardedEventCompat(PointsAwardedEvent):
 
 class AchievementUnlockedEventCompat(AchievementUnlockedEvent):
     """Backward compatibility wrapper for AchievementUnlockedEvent."""
-    
+
     def __init__(self, *args, **kwargs):
-        _deprecation_warning("AchievementUnlockedEvent", "NewAchievementUnlockedEvent")  
+        _deprecation_warning("AchievementUnlockedEvent", "NewAchievementUnlockedEvent")
         super().__init__(*args, **kwargs)
 
 
 class UserRegisteredEventCompat(UserRegisteredEvent):
     """Backward compatibility wrapper for UserRegisteredEvent."""
-    
+
     def __init__(self, *args, **kwargs):
         _deprecation_warning("UserRegisteredEvent", "NewUserRegisteredEvent")
         super().__init__(*args, **kwargs)
@@ -679,7 +682,7 @@ class UserRegisteredEventCompat(UserRegisteredEvent):
 
 class ServiceStartedEventCompat(ServiceStartedEvent):
     """Backward compatibility wrapper for ServiceStartedEvent."""
-    
+
     def __init__(self, *args, **kwargs):
         _deprecation_warning("ServiceStartedEvent", "NewServiceStartedEvent")
         super().__init__(*args, **kwargs)
@@ -689,17 +692,18 @@ class ServiceStartedEventCompat(ServiceStartedEvent):
 class EnhancedEventFactory(EventFactory):
     """
     Enhanced Event Factory that bridges old and new event systems.
-    
+
     This factory tries to use the new event system when possible,
     falling back to the legacy system for backward compatibility.
     """
-    
+
     @classmethod
     def create_event(cls, event_type: str, **kwargs) -> BaseEvent:
         """Create event using new system if available, fallback to legacy."""
         # Try new system first
         try:
             from .events.catalog import event_catalog
+
             route = event_catalog.get_route_by_event_type(event_type)
             if route:
                 # Map legacy parameters to new event format if needed
@@ -707,22 +711,24 @@ class EnhancedEventFactory(EventFactory):
                 return route.event_class(**mapped_kwargs)
         except Exception:
             pass
-        
+
         # Fallback to legacy system
         return super().create_event(event_type, **kwargs)
-    
+
     @classmethod
-    def _map_legacy_params(cls, event_type: str, kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    def _map_legacy_params(
+        cls, event_type: str, kwargs: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """Map legacy parameter names to new event system parameters."""
         mapped = kwargs.copy()
-        
+
         # Common mapping for user_id requirement in new domain events
-        if event_type.startswith(('gamification.', 'narrative.')):
-            if 'user_id' not in mapped and 'payload' in mapped:
-                payload = mapped['payload']
-                if isinstance(payload, dict) and 'user_id' in payload:
-                    mapped['user_id'] = payload['user_id']
-        
+        if event_type.startswith(("gamification.", "narrative.")):
+            if "user_id" not in mapped and "payload" in mapped:
+                payload = mapped["payload"]
+                if isinstance(payload, dict) and "user_id" in payload:
+                    mapped["user_id"] = payload["user_id"]
+
         return mapped
 
 
@@ -731,7 +737,7 @@ EventFactory = EnhancedEventFactory
 
 # Export compatibility aliases for existing code
 CompatPointsAwardedEvent = PointsAwardedEventCompat
-CompatAchievementUnlockedEvent = AchievementUnlockedEventCompat  
+CompatAchievementUnlockedEvent = AchievementUnlockedEventCompat
 CompatUserRegisteredEvent = UserRegisteredEventCompat
 CompatServiceStartedEvent = ServiceStartedEventCompat
 

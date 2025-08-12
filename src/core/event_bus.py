@@ -31,16 +31,20 @@ except ImportError:
             """Create event from dictionary using new event system."""
             # Try to find the right event class from the new system
             from .events.catalog import event_catalog
+
             event_type = data.get("event_type")
-            
+
             # Try to get event route from catalog
             route = event_catalog.get_route_by_event_type(event_type)
             if route:
                 return route.event_class.from_dict(data)
-            
+
             # Fallback to base event
             from .events.base import BaseEventWithValidation
+
             return BaseEventWithValidation.from_dict(data)
+
+
 from .interfaces import (
     EventBusConfig,
     EventHandlingError,

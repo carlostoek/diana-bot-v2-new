@@ -5,56 +5,52 @@ This module tests the comprehensive event contracts system that all
 services use for communication in Diana Bot V2.
 """
 
-import pytest
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
 
+import pytest
+
+from src.core.events.admin import (
+    AdminActionPerformedEvent,
+    AnalyticsEvent,
+    ContentModerationEvent,
+    SystemMaintenanceEvent,
+    UserBannedEvent,
+    UserRegisteredEvent,
+)
 from src.core.events.base import (
     BaseEventWithValidation,
     DomainEvent,
-    SystemEvent,
-    IntegrationEvent,
     EventCategory,
     EventMetadata,
+    IntegrationEvent,
+    SystemEvent,
     ValidationLevel,
 )
-from src.core.events.gamification import (
-    PointsAwardedEvent,
-    PointsDeductedEvent,
-    AchievementUnlockedEvent,
-    StreakUpdatedEvent,
-    LeaderboardChangedEvent,
-    DailyBonusClaimedEvent,
-)
-from src.core.events.narrative import (
-    StoryProgressEvent,
-    DecisionMadeEvent,
-    ChapterCompletedEvent,
-    NarrativeStateChangedEvent,
-    CharacterInteractionEvent,
-    StoryStartedEvent,
-)
-from src.core.events.admin import (
-    UserRegisteredEvent,
-    UserBannedEvent,
-    ContentModerationEvent,
-    AnalyticsEvent,
-    AdminActionPerformedEvent,
-    SystemMaintenanceEvent,
-)
+from src.core.events.catalog import EventCatalog, EventRoute, ServiceName, event_catalog
 from src.core.events.core import (
-    UserActionEvent,
+    ConfigurationChangedEvent,
     ServiceHealthEvent,
     ServiceStartedEvent,
     ServiceStoppedEvent,
     SystemErrorEvent,
-    ConfigurationChangedEvent,
+    UserActionEvent,
 )
-from src.core.events.catalog import (
-    EventCatalog,
-    EventRoute,
-    ServiceName,
-    event_catalog,
+from src.core.events.gamification import (
+    AchievementUnlockedEvent,
+    DailyBonusClaimedEvent,
+    LeaderboardChangedEvent,
+    PointsAwardedEvent,
+    PointsDeductedEvent,
+    StreakUpdatedEvent,
+)
+from src.core.events.narrative import (
+    ChapterCompletedEvent,
+    CharacterInteractionEvent,
+    DecisionMadeEvent,
+    NarrativeStateChangedEvent,
+    StoryProgressEvent,
+    StoryStartedEvent,
 )
 from src.core.interfaces import EventPriority, EventValidationError
 
@@ -64,16 +60,16 @@ class TestBaseEventClasses:
 
     def test_base_event_creation(self):
         """Test creating a base event with validation."""
-        
+
         class TestEvent(BaseEventWithValidation):
             def _get_event_category(self) -> EventCategory:
                 return EventCategory.CORE
-        
+
         event = TestEvent(
             source_service="test_service",
             user_id=123,
         )
-        
+
         assert event.source_service == "test_service"
         assert event.user_id == 123
         assert event.category == EventCategory.CORE
@@ -84,29 +80,23 @@ class TestBaseEventClasses:
 
     def test_domain_event_requires_user_id(self):
         """Test that domain events require a user_id."""
-        
+
         class TestDomainEvent(DomainEvent):
             def _get_event_category(self) -> EventCategory:
                 return EventCategory.GAMIFICATION
-        
+
         # Should work with user_id
-        event = TestDomainEvent(
-            user_id=123,
-            source_service="test_service"
-        )
+        event = TestDomainEvent(user_id=123, source_service="test_service")
         assert event.user_id == 123
-        
+
         # Should fail without user_id
         with pytest.raises(EventValidationError):
             TestDomainEvent(source_service="test_service")
 
     def test_system_event_creation(self):
         """Test creating system events."""
-        event = SystemEvent(
-            source_service="test_service",
-            system_component="database"
-        )
-        
+        event = SystemEvent(source_service="test_service", system_component="database")
+
         assert event.source_service == "test_service"
         assert event.system_component == "database"
         assert event.category == EventCategory.SYSTEM
@@ -116,61 +106,54 @@ class TestBaseEventClasses:
         metadata = EventMetadata(
             created_at=datetime.utcnow(),
             source_version="1.0.0",
-            trace_id="test-trace-123"
+            trace_id="test-trace-123",
         )
-        
+
         class TestEvent(BaseEventWithValidation):
             def _get_event_category(self) -> EventCategory:
                 return EventCategory.CORE
-        
-        event = TestEvent(
-            source_service="test_service",
-            metadata=metadata
-        )
-        
+
+        event = TestEvent(source_service="test_service", metadata=metadata)
+
         assert event.metadata.source_version == "1.0.0"
         assert event.metadata.trace_id == "test-trace-123"
 
     def test_validation_levels(self):
         """Test different validation strictness levels."""
-        
+
         class TestEvent(BaseEventWithValidation):
             def _get_event_category(self) -> EventCategory:
                 return EventCategory.CORE
-        
+
         # Normal validation should pass
         event = TestEvent(
-            source_service="test_service",
-            validation_level=ValidationLevel.NORMAL
+            source_service="test_service", validation_level=ValidationLevel.NORMAL
         )
         assert event._validation_level == ValidationLevel.NORMAL
-        
+
         # Lenient validation should be more permissive
         event_lenient = TestEvent(
-            source_service="test_service",
-            validation_level=ValidationLevel.LENIENT
+            source_service="test_service", validation_level=ValidationLevel.LENIENT
         )
         assert event_lenient._validation_level == ValidationLevel.LENIENT
 
     def test_event_serialization(self):
         """Test event serialization and deserialization."""
-        
+
         class TestEvent(BaseEventWithValidation):
             def _get_event_category(self) -> EventCategory:
                 return EventCategory.CORE
-        
+
         original_event = TestEvent(
-            source_service="test_service",
-            user_id=123,
-            payload={"test_data": "value"}
+            source_service="test_service", user_id=123, payload={"test_data": "value"}
         )
-        
+
         # Serialize to dict
         event_dict = original_event.to_dict()
         assert event_dict["source_service"] == "test_service"
         assert event_dict["user_id"] == 123
         assert event_dict["payload"]["test_data"] == "value"
-        
+
         # Deserialize from dict
         restored_event = TestEvent.from_dict(event_dict)
         assert restored_event.source_service == original_event.source_service
@@ -189,9 +172,9 @@ class TestGamificationEvents:
             action_type="story_chapter_completed",
             multiplier=1.5,
             bonus_points=10,
-            source_service="gamification"
+            source_service="gamification",
         )
-        
+
         assert event.user_id == 123
         assert event.points_amount == 50
         assert event.action_type == "story_chapter_completed"
@@ -210,9 +193,9 @@ class TestGamificationEvents:
                 user_id=123,
                 points_amount=-10,  # Invalid: negative
                 action_type="test",
-                source_service="gamification"
+                source_service="gamification",
             )
-        
+
         # Invalid multiplier
         with pytest.raises(EventValidationError):
             PointsAwardedEvent(
@@ -220,7 +203,7 @@ class TestGamificationEvents:
                 points_amount=50,
                 action_type="test",
                 multiplier=0,  # Invalid: zero
-                source_service="gamification"
+                source_service="gamification",
             )
 
     def test_achievement_unlocked_event(self):
@@ -232,9 +215,9 @@ class TestGamificationEvents:
             achievement_category="narrative",
             achievement_tier="bronze",
             points_reward=100,
-            source_service="gamification"
+            source_service="gamification",
         )
-        
+
         assert event.achievement_id == "first_story_complete"
         assert event.achievement_name == "Story Explorer"
         assert event.achievement_tier == "bronze"
@@ -249,9 +232,9 @@ class TestGamificationEvents:
             previous_count=6,
             new_count=7,
             streak_milestone=7,  # Weekly milestone
-            source_service="gamification"
+            source_service="gamification",
         )
-        
+
         assert event.streak_type == "daily_login"
         assert event.previous_count == 6
         assert event.new_count == 7
@@ -274,9 +257,9 @@ class TestNarrativeEvents:
             progress_percentage=45.5,
             reading_time_seconds=300,
             interaction_count=5,
-            source_service="narrative"
+            source_service="narrative",
         )
-        
+
         assert event.story_id == "diana_story_001"
         assert event.chapter_id == "chapter_03"
         assert event.previous_chapter_id == "chapter_02"
@@ -296,9 +279,9 @@ class TestNarrativeEvents:
             decision_text="Help Diana with her research",
             decision_consequences={"relationship_diana": +10, "knowledge_points": +5},
             character_relationships_affected={"diana": 0.1},
-            source_service="narrative"
+            source_service="narrative",
         )
-        
+
         assert event.decision_point_id == "choice_001"
         assert event.decision_id == "option_a"
         assert event.decision_text == "Help Diana with her research"
@@ -317,9 +300,9 @@ class TestNarrativeEvents:
             decisions_made=3,
             character_interactions=7,
             chapter_rating=5,
-            source_service="narrative"
+            source_service="narrative",
         )
-        
+
         assert event.chapter_title == "The Discovery"
         assert event.completion_time_seconds == 600
         assert event.decisions_made == 3
@@ -338,17 +321,17 @@ class TestAdminEvents:
             "first_name": "Test",
             "last_name": "User",
             "language_code": "en",
-            "is_premium": False
+            "is_premium": False,
         }
-        
+
         event = UserRegisteredEvent(
             user_id=123,
             telegram_data=telegram_data,
             registration_source="telegram",
             referral_code="FRIEND123",
-            source_service="telegram_adapter"
+            source_service="telegram_adapter",
         )
-        
+
         assert event.user_id == 123
         assert event.username == "test_user"
         assert event.first_name == "Test"
@@ -365,9 +348,9 @@ class TestAdminEvents:
             ban_reason="Inappropriate content",
             ban_type="temporary",
             ban_duration_hours=24,
-            source_service="admin"
+            source_service="admin",
         )
-        
+
         assert event.banned_by_admin_id == 456
         assert event.ban_reason == "Inappropriate content"
         assert event.ban_type == "temporary"
@@ -385,9 +368,9 @@ class TestAdminEvents:
             automatic_moderation=True,
             confidence_score=0.85,
             affected_user_id=123,
-            source_service="moderation"
+            source_service="moderation",
         )
-        
+
         assert event.content_id == "msg_12345"
         assert event.content_type == "message"
         assert event.moderation_action == "flagged"
@@ -408,9 +391,9 @@ class TestCoreEvents:
             session_id="session_789",
             message_id=456,
             chat_id=111,
-            source_service="telegram_adapter"
+            source_service="telegram_adapter",
         )
-        
+
         assert event.user_id == 123
         assert event.action_type == "message_sent"
         assert event.action_data["message_id"] == 456
@@ -427,11 +410,11 @@ class TestCoreEvents:
             health_metrics={
                 "cpu_usage": 45.2,
                 "memory_usage": 67.8,
-                "response_time_ms": 120
+                "response_time_ms": 120,
             },
-            system_component="main"
+            system_component="main",
         )
-        
+
         assert event.health_status == "healthy"
         assert event.is_healthy == True
         assert event.requires_attention == False
@@ -444,9 +427,9 @@ class TestCoreEvents:
             source_service="gamification",
             health_status="unhealthy",
             health_metrics={"error_rate": 25.5},
-            system_component="main"
+            system_component="main",
         )
-        
+
         assert event.health_status == "unhealthy"
         assert event.is_healthy == False
         assert event.requires_attention == True
@@ -461,9 +444,9 @@ class TestCoreEvents:
             error_context={"database_url": "postgresql://localhost:5432/diana"},
             stack_trace="Traceback (most recent call last)...",
             affected_user_id=123,
-            system_component="database"
+            system_component="database",
         )
-        
+
         assert event.error_type == "DatabaseConnectionError"
         assert event.error_message == "Failed to connect to PostgreSQL"
         assert event.affected_user_id == 123
@@ -477,7 +460,7 @@ class TestEventCatalog:
     def test_event_catalog_initialization(self):
         """Test that the event catalog is properly initialized."""
         assert isinstance(event_catalog, EventCatalog)
-        
+
         # Test that we can get routes for known events
         route = event_catalog.get_route(PointsAwardedEvent)
         assert route is not None
@@ -491,15 +474,15 @@ class TestEventCatalog:
             primary_publisher=ServiceName.GAMIFICATION,
             subscribers={ServiceName.ANALYTICS, ServiceName.NOTIFICATION},
             secondary_publishers={ServiceName.NARRATIVE},
-            requires_persistence=True
+            requires_persistence=True,
         )
-        
+
         assert route.event_class == PointsAwardedEvent
         assert route.primary_publisher == ServiceName.GAMIFICATION
         assert ServiceName.ANALYTICS in route.subscribers
         assert ServiceName.NARRATIVE in route.secondary_publishers
         assert route.requires_persistence == True
-        
+
         # Test all_publishers property
         all_publishers = route.all_publishers
         assert ServiceName.GAMIFICATION in all_publishers
@@ -510,15 +493,15 @@ class TestEventCatalog:
         # Test PointsAwardedEvent routing
         publishers = event_catalog.get_publishers(PointsAwardedEvent)
         subscribers = event_catalog.get_subscribers(PointsAwardedEvent)
-        
+
         assert ServiceName.GAMIFICATION in publishers
         assert ServiceName.ANALYTICS in subscribers
         assert ServiceName.NOTIFICATION in subscribers
-        
+
         # Test UserRegisteredEvent routing
         user_reg_publishers = event_catalog.get_publishers(UserRegisteredEvent)
         user_reg_subscribers = event_catalog.get_subscribers(UserRegisteredEvent)
-        
+
         assert ServiceName.TELEGRAM_ADAPTER in user_reg_publishers
         assert ServiceName.USER_MANAGEMENT in user_reg_subscribers
         assert ServiceName.GAMIFICATION in user_reg_subscribers
@@ -526,20 +509,26 @@ class TestEventCatalog:
     def test_service_event_mapping(self):
         """Test getting events published/subscribed by services."""
         # Test gamification service
-        published_events = event_catalog.get_events_published_by(ServiceName.GAMIFICATION)
-        subscribed_events = event_catalog.get_events_subscribed_by(ServiceName.GAMIFICATION)
-        
+        published_events = event_catalog.get_events_published_by(
+            ServiceName.GAMIFICATION
+        )
+        subscribed_events = event_catalog.get_events_subscribed_by(
+            ServiceName.GAMIFICATION
+        )
+
         assert PointsAwardedEvent in published_events
         assert AchievementUnlockedEvent in published_events
-        assert UserRegisteredEvent in subscribed_events  # Gamification subscribes to user registration
+        assert (
+            UserRegisteredEvent in subscribed_events
+        )  # Gamification subscribes to user registration
 
     def test_service_dependencies(self):
         """Test getting service dependencies."""
         deps = event_catalog.get_service_dependencies(ServiceName.GAMIFICATION)
-        
+
         assert "publishes_to" in deps
         assert "subscribes_from" in deps
-        
+
         # Gamification publishes to notification and analytics
         assert ServiceName.NOTIFICATION in deps["publishes_to"]
         assert ServiceName.ANALYTICS in deps["publishes_to"]
@@ -547,7 +536,7 @@ class TestEventCatalog:
     def test_event_catalog_validation(self):
         """Test event catalog validation."""
         errors = event_catalog.validate_routing()
-        
+
         # Should have minimal errors for a well-designed catalog
         assert isinstance(errors, dict)
         assert "missing_subscribers" in errors
@@ -557,13 +546,13 @@ class TestEventCatalog:
     def test_routing_table_generation(self):
         """Test generating routing table for external systems."""
         routing_table = event_catalog.generate_routing_table()
-        
+
         assert isinstance(routing_table, dict)
-        
+
         # Check that PointsAwardedEvent is in the routing table
         points_event_type = "gamification.points_awarded"
         assert points_event_type in routing_table
-        
+
         route_info = routing_table[points_event_type]
         assert "publishers" in route_info
         assert "subscribers" in route_info
@@ -572,9 +561,11 @@ class TestEventCatalog:
 
     def test_event_categories(self):
         """Test getting events by category."""
-        gamification_events = event_catalog.get_events_by_category(EventCategory.GAMIFICATION)
+        gamification_events = event_catalog.get_events_by_category(
+            EventCategory.GAMIFICATION
+        )
         narrative_events = event_catalog.get_events_by_category(EventCategory.NARRATIVE)
-        
+
         assert PointsAwardedEvent in gamification_events
         assert AchievementUnlockedEvent in gamification_events
         assert StoryProgressEvent in narrative_events
@@ -583,10 +574,12 @@ class TestEventCatalog:
     def test_critical_events(self):
         """Test identifying critical events."""
         critical_events = event_catalog.get_critical_events()
-        
+
         # Events that require persistence or exactly-once delivery should be critical
         assert UserRegisteredEvent in critical_events  # User registration is critical
-        assert DecisionMadeEvent in critical_events  # Decisions are critical for story continuity
+        assert (
+            DecisionMadeEvent in critical_events
+        )  # Decisions are critical for story continuity
 
 
 class TestEventValidation:
@@ -596,7 +589,7 @@ class TestEventValidation:
         """Test strict validation mode."""
         # Create event with very old timestamp (should fail in strict mode)
         old_timestamp = datetime(2020, 1, 1)
-        
+
         with pytest.raises(EventValidationError, match="too old"):
             PointsAwardedEvent(
                 user_id=123,
@@ -604,23 +597,23 @@ class TestEventValidation:
                 action_type="test",
                 timestamp=old_timestamp,
                 validation_level=ValidationLevel.STRICT,
-                source_service="gamification"
+                source_service="gamification",
             )
 
     def test_payload_size_validation(self):
         """Test payload size limits in strict mode."""
         # Create a very large payload
         large_payload = {"data": "x" * 15000}  # > 10KB
-        
+
         class TestEvent(BaseEventWithValidation):
             def _get_event_category(self) -> EventCategory:
                 return EventCategory.CORE
-        
+
         with pytest.raises(EventValidationError, match="payload size"):
             TestEvent(
                 source_service="test",
                 payload=large_payload,
-                validation_level=ValidationLevel.STRICT
+                validation_level=ValidationLevel.STRICT,
             )
 
     def test_user_id_validation(self):
@@ -631,7 +624,7 @@ class TestEventValidation:
                 user_id=-1,  # Invalid: negative
                 points_amount=50,
                 action_type="test",
-                source_service="gamification"
+                source_service="gamification",
             )
 
 
@@ -645,12 +638,12 @@ class TestEventInteroperability:
                 user_id=123,
                 points_amount=50,
                 action_type="test",
-                source_service="gamification"
+                source_service="gamification",
             ),
             UserRegisteredEvent(
                 user_id=123,
                 telegram_data={"username": "test"},
-                source_service="telegram_adapter"
+                source_service="telegram_adapter",
             ),
             DecisionMadeEvent(
                 user_id=123,
@@ -660,20 +653,20 @@ class TestEventInteroperability:
                 decision_id="option_a",
                 decision_text="Test decision",
                 decision_consequences={},
-                source_service="narrative"
-            )
+                source_service="narrative",
+            ),
         ]
-        
+
         for original_event in events_to_test:
             # Serialize to dict
             event_dict = original_event.to_dict()
-            
+
             # Deserialize using catalog
             route = event_catalog.get_route_by_event_type(original_event.event_type)
             assert route is not None, f"No route found for {original_event.event_type}"
-            
+
             restored_event = route.event_class.from_dict(event_dict)
-            
+
             # Verify key properties match
             assert restored_event.event_type == original_event.event_type
             assert restored_event.user_id == original_event.user_id
@@ -685,14 +678,14 @@ class TestEventInteroperability:
         # Create a PointsAwardedEvent via the catalog
         route = event_catalog.get_route(PointsAwardedEvent)
         assert route is not None
-        
+
         event = route.event_class(
             user_id=123,
             points_amount=50,
             action_type="test",
-            source_service="gamification"
+            source_service="gamification",
         )
-        
+
         assert isinstance(event, PointsAwardedEvent)
         assert event.user_id == 123
         assert event.points_amount == 50
@@ -703,32 +696,34 @@ class TestEventInteroperability:
         user_reg_event = UserRegisteredEvent(
             user_id=123,
             telegram_data={"username": "test"},
-            source_service="telegram_adapter"
+            source_service="telegram_adapter",
         )
-        
+
         # Get subscribers that should handle this event
         subscribers = event_catalog.get_subscribers(UserRegisteredEvent)
-        
+
         # Verify expected services are subscribed
         expected_subscribers = {
             ServiceName.USER_MANAGEMENT,
             ServiceName.GAMIFICATION,
             ServiceName.NARRATIVE,
             ServiceName.ANALYTICS,
-            ServiceName.ADMIN
+            ServiceName.ADMIN,
         }
-        
+
         for expected in expected_subscribers:
-            assert expected in subscribers, f"{expected} should subscribe to user registration"
-        
+            assert (
+                expected in subscribers
+            ), f"{expected} should subscribe to user registration"
+
         # Points awarded -> Should trigger notifications and analytics
         points_event = PointsAwardedEvent(
             user_id=123,
             points_amount=50,
             action_type="story_complete",
-            source_service="gamification"
+            source_service="gamification",
         )
-        
+
         points_subscribers = event_catalog.get_subscribers(PointsAwardedEvent)
         assert ServiceName.NOTIFICATION in points_subscribers
         assert ServiceName.ANALYTICS in points_subscribers

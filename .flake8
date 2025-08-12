@@ -14,7 +14,7 @@ max-line-length = 88
 extend-ignore = E203, W503, E501, D100, D104
 
 # Directories to exclude from checking
-exclude = 
+exclude =
     .git,
     __pycache__,
     .pytest_cache,
@@ -29,7 +29,7 @@ exclude =
     docs/_build
 
 # Enable additional flake8 plugins
-enable-extensions = 
+enable-extensions =
     # flake8-bugbear
     B,
     # flake8-docstrings

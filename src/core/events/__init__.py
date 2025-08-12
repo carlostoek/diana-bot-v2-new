@@ -22,7 +22,7 @@ try:
 except ImportError:
     pass
 
-try: 
+try:
     from .gamification import *
 except ImportError:
     pass
@@ -38,7 +38,7 @@ except ImportError:
     pass
 
 try:
-    from .catalog import EventCatalog, event_catalog, ServiceName
+    from .catalog import EventCatalog, ServiceName, event_catalog
 except ImportError:
     EventCatalog = None
     event_catalog = None
@@ -48,15 +48,13 @@ except ImportError:
 __all__ = [
     # Base classes
     "BaseEventWithValidation",
-    "DomainEvent", 
+    "DomainEvent",
     "SystemEvent",
     "IntegrationEvent",
-    
     # Supporting types
     "EventCategory",
     "EventMetadata",
     "ValidationLevel",
-    
     # Event Catalog
     "EventCatalog",
     "ServiceName",

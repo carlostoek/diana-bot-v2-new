@@ -15,11 +15,11 @@ from .base import DomainEvent, EventCategory
 class StoryProgressEvent(DomainEvent):
     """
     Event fired when a user progresses through the story.
-    
+
     This is a fundamental narrative event that tracks user journey
     through interactive stories and triggers various game mechanics.
     """
-    
+
     def __init__(
         self,
         user_id: int,
@@ -31,11 +31,11 @@ class StoryProgressEvent(DomainEvent):
         interaction_count: int = 0,
         source_service: str = "narrative",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize StoryProgressEvent.
-        
+
         Args:
             user_id: ID of the user progressing through the story
             story_id: ID of the story being read
@@ -61,65 +61,68 @@ class StoryProgressEvent(DomainEvent):
             "user_reading_speed_wpm": None,
             "chapter_difficulty_rating": None,
         }
-        
+
         super().__init__(
             user_id=user_id,
             source_service=source_service,
             correlation_id=correlation_id,
             priority=EventPriority.NORMAL,
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def story_id(self) -> str:
         """ID of the story being read."""
         return self.payload["story_id"]
-    
+
     @property
     def chapter_id(self) -> str:
         """ID of the current chapter."""
         return self.payload["chapter_id"]
-    
+
     @property
     def previous_chapter_id(self) -> Optional[str]:
         """ID of the previous chapter."""
         return self.payload.get("previous_chapter_id")
-    
+
     @property
     def progress_percentage(self) -> float:
         """Overall story completion percentage."""
         return self.payload["progress_percentage"]
-    
+
     @property
     def reading_time_seconds(self) -> Optional[int]:
         """Time spent reading this chapter."""
         return self.payload.get("reading_time_seconds")
-    
+
     @property
     def interaction_count(self) -> int:
         """Number of interactions in this chapter."""
         return self.payload["interaction_count"]
-    
+
     def _get_event_category(self) -> EventCategory:
         """Story progress events belong to the NARRATIVE category."""
         return EventCategory.NARRATIVE
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate story progress specific requirements."""
         super()._custom_validation(errors)
-        
+
         if not self.story_id or not isinstance(self.story_id, str):
             errors.append("Story ID must be a non-empty string")
-        
+
         if not self.chapter_id or not isinstance(self.chapter_id, str):
             errors.append("Chapter ID must be a non-empty string")
-        
-        if not isinstance(self.progress_percentage, (int, float)) or not (0 <= self.progress_percentage <= 100):
+
+        if not isinstance(self.progress_percentage, (int, float)) or not (
+            0 <= self.progress_percentage <= 100
+        ):
             errors.append("Progress percentage must be between 0 and 100")
-        
+
         if self.reading_time_seconds is not None and (
-            not isinstance(self.reading_time_seconds, int) or self.reading_time_seconds < 0
+            not isinstance(self.reading_time_seconds, int)
+            or self.reading_time_seconds < 0
         ):
             errors.append("Reading time must be a non-negative integer")
 
@@ -127,11 +130,11 @@ class StoryProgressEvent(DomainEvent):
 class DecisionMadeEvent(DomainEvent):
     """
     Event fired when a user makes a decision in an interactive story.
-    
+
     This is a critical narrative event that affects story branching,
     character relationships, and future story paths.
     """
-    
+
     def __init__(
         self,
         user_id: int,
@@ -146,11 +149,11 @@ class DecisionMadeEvent(DomainEvent):
         decision_time_seconds: Optional[int] = None,
         source_service: str = "narrative",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize DecisionMadeEvent.
-        
+
         Args:
             user_id: ID of the user making the decision
             story_id: ID of the story
@@ -182,70 +185,78 @@ class DecisionMadeEvent(DomainEvent):
             "alternative_outcomes": None,
             "story_impact_score": None,
         }
-        
+
         super().__init__(
             user_id=user_id,
             source_service=source_service,
             correlation_id=correlation_id,
             priority=EventPriority.HIGH,  # Decisions are important story events
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def story_id(self) -> str:
         """ID of the story."""
         return self.payload["story_id"]
-    
+
     @property
     def chapter_id(self) -> str:
         """ID of the chapter."""
         return self.payload["chapter_id"]
-    
+
     @property
     def decision_point_id(self) -> str:
         """ID of the decision point."""
         return self.payload["decision_point_id"]
-    
+
     @property
     def decision_id(self) -> str:
         """ID of the chosen decision."""
         return self.payload["decision_id"]
-    
+
     @property
     def decision_text(self) -> str:
         """Text of the decision made."""
         return self.payload["decision_text"]
-    
+
     @property
     def decision_consequences(self) -> Dict[str, Any]:
         """Consequences of this decision."""
         return self.payload["decision_consequences"]
-    
+
     @property
     def character_relationships_affected(self) -> Dict[str, float]:
         """Characters and relationship changes."""
         return self.payload["character_relationships_affected"]
-    
+
     @property
     def story_branches_unlocked(self) -> List[str]:
         """New story branches unlocked."""
         return self.payload["story_branches_unlocked"]
-    
+
     def _get_event_category(self) -> EventCategory:
         """Decision events belong to the NARRATIVE category."""
         return EventCategory.NARRATIVE
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate decision made specific requirements."""
         super()._custom_validation(errors)
-        
-        required_string_fields = ["story_id", "chapter_id", "decision_point_id", "decision_id", "decision_text"]
+
+        required_string_fields = [
+            "story_id",
+            "chapter_id",
+            "decision_point_id",
+            "decision_id",
+            "decision_text",
+        ]
         for field in required_string_fields:
             value = getattr(self, field)
             if not value or not isinstance(value, str):
-                errors.append(f"{field.replace('_', ' ').title()} must be a non-empty string")
-        
+                errors.append(
+                    f"{field.replace('_', ' ').title()} must be a non-empty string"
+                )
+
         if not isinstance(self.decision_consequences, dict):
             errors.append("Decision consequences must be a dictionary")
 
@@ -253,11 +264,11 @@ class DecisionMadeEvent(DomainEvent):
 class ChapterCompletedEvent(DomainEvent):
     """
     Event fired when a user completes a story chapter.
-    
+
     This event marks chapter milestones and often triggers rewards,
     achievements, and progress tracking.
     """
-    
+
     def __init__(
         self,
         user_id: int,
@@ -272,11 +283,11 @@ class ChapterCompletedEvent(DomainEvent):
         rewards_earned: Dict[str, Any] = None,
         source_service: str = "narrative",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize ChapterCompletedEvent.
-        
+
         Args:
             user_id: ID of the user completing the chapter
             story_id: ID of the story
@@ -308,73 +319,79 @@ class ChapterCompletedEvent(DomainEvent):
             "engagement_score": None,
             "story_completion_percentage": None,
         }
-        
+
         super().__init__(
             user_id=user_id,
             source_service=source_service,
             correlation_id=correlation_id,
             priority=EventPriority.HIGH,  # Chapter completion is a milestone
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def story_id(self) -> str:
         """ID of the story."""
         return self.payload["story_id"]
-    
+
     @property
     def chapter_id(self) -> str:
         """ID of the completed chapter."""
         return self.payload["chapter_id"]
-    
+
     @property
     def chapter_title(self) -> str:
         """Title of the completed chapter."""
         return self.payload["chapter_title"]
-    
+
     @property
     def completion_time_seconds(self) -> int:
         """Time taken to complete the chapter."""
         return self.payload["completion_time_seconds"]
-    
+
     @property
     def decisions_made(self) -> int:
         """Number of decisions made."""
         return self.payload["decisions_made"]
-    
+
     @property
     def character_interactions(self) -> int:
         """Number of character interactions."""
         return self.payload["character_interactions"]
-    
+
     @property
     def chapter_rating(self) -> Optional[int]:
         """User's rating of the chapter."""
         return self.payload.get("chapter_rating")
-    
+
     def _get_event_category(self) -> EventCategory:
         """Chapter completion events belong to the NARRATIVE category."""
         return EventCategory.NARRATIVE
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate chapter completed specific requirements."""
         super()._custom_validation(errors)
-        
+
         required_string_fields = ["story_id", "chapter_id", "chapter_title"]
         for field in required_string_fields:
             value = getattr(self, field)
             if not value or not isinstance(value, str):
-                errors.append(f"{field.replace('_', ' ').title()} must be a non-empty string")
-        
-        if not isinstance(self.completion_time_seconds, int) or self.completion_time_seconds < 0:
+                errors.append(
+                    f"{field.replace('_', ' ').title()} must be a non-empty string"
+                )
+
+        if (
+            not isinstance(self.completion_time_seconds, int)
+            or self.completion_time_seconds < 0
+        ):
             errors.append("Completion time must be a non-negative integer")
-        
+
         if not isinstance(self.decisions_made, int) or self.decisions_made < 0:
             errors.append("Decisions made must be a non-negative integer")
-        
+
         if self.chapter_rating is not None and (
-            not isinstance(self.chapter_rating, int) or not (1 <= self.chapter_rating <= 5)
+            not isinstance(self.chapter_rating, int)
+            or not (1 <= self.chapter_rating <= 5)
         ):
             errors.append("Chapter rating must be an integer between 1 and 5")
 
@@ -382,11 +399,11 @@ class ChapterCompletedEvent(DomainEvent):
 class NarrativeStateChangedEvent(DomainEvent):
     """
     Event fired when the user's narrative state changes significantly.
-    
+
     This event tracks major changes in the user's story context,
     character relationships, or narrative flags that affect future content.
     """
-    
+
     def __init__(
         self,
         user_id: int,
@@ -400,11 +417,11 @@ class NarrativeStateChangedEvent(DomainEvent):
         locked_content: List[str] = None,
         source_service: str = "narrative",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize NarrativeStateChangedEvent.
-        
+
         Args:
             user_id: ID of the user whose state changed
             story_id: ID of the story
@@ -433,68 +450,70 @@ class NarrativeStateChangedEvent(DomainEvent):
             "state_impact_score": None,
             "narrative_complexity": None,
         }
-        
+
         super().__init__(
             user_id=user_id,
             source_service=source_service,
             correlation_id=correlation_id,
             priority=EventPriority.NORMAL,
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def story_id(self) -> str:
         """ID of the story."""
         return self.payload["story_id"]
-    
+
     @property
     def state_change_type(self) -> str:
         """Type of state change."""
         return self.payload["state_change_type"]
-    
+
     @property
     def previous_state(self) -> Dict[str, Any]:
         """Previous state values."""
         return self.payload["previous_state"]
-    
+
     @property
     def new_state(self) -> Dict[str, Any]:
         """New state values."""
         return self.payload["new_state"]
-    
+
     @property
     def change_reason(self) -> str:
         """Reason for the state change."""
         return self.payload["change_reason"]
-    
+
     @property
     def affected_characters(self) -> List[str]:
         """Characters affected by this change."""
         return self.payload["affected_characters"]
-    
+
     @property
     def unlocked_content(self) -> List[str]:
         """Content unlocked by this change."""
         return self.payload["unlocked_content"]
-    
+
     def _get_event_category(self) -> EventCategory:
         """Narrative state events belong to the NARRATIVE category."""
         return EventCategory.NARRATIVE
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate narrative state changed specific requirements."""
         super()._custom_validation(errors)
-        
+
         required_string_fields = ["story_id", "state_change_type", "change_reason"]
         for field in required_string_fields:
             value = getattr(self, field)
             if not value or not isinstance(value, str):
-                errors.append(f"{field.replace('_', ' ').title()} must be a non-empty string")
-        
+                errors.append(
+                    f"{field.replace('_', ' ').title()} must be a non-empty string"
+                )
+
         if not isinstance(self.previous_state, dict):
             errors.append("Previous state must be a dictionary")
-        
+
         if not isinstance(self.new_state, dict):
             errors.append("New state must be a dictionary")
 
@@ -502,11 +521,11 @@ class NarrativeStateChangedEvent(DomainEvent):
 class CharacterInteractionEvent(DomainEvent):
     """
     Event fired when a user interacts with a character in the story.
-    
+
     This event tracks character relationships and dialogue patterns
     which affect future story branches and character behavior.
     """
-    
+
     def __init__(
         self,
         user_id: int,
@@ -520,11 +539,11 @@ class CharacterInteractionEvent(DomainEvent):
         mood_change: Optional[str] = None,
         source_service: str = "narrative",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize CharacterInteractionEvent.
-        
+
         Args:
             user_id: ID of the user interacting
             story_id: ID of the story
@@ -554,50 +573,58 @@ class CharacterInteractionEvent(DomainEvent):
             "character_trust_level": None,
             "interaction_history_count": None,
         }
-        
+
         super().__init__(
             user_id=user_id,
             source_service=source_service,
             correlation_id=correlation_id,
             priority=EventPriority.NORMAL,
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def character_id(self) -> str:
         """ID of the character."""
         return self.payload["character_id"]
-    
+
     @property
     def character_name(self) -> str:
         """Name of the character."""
         return self.payload["character_name"]
-    
+
     @property
     def interaction_type(self) -> str:
         """Type of interaction."""
         return self.payload["interaction_type"]
-    
+
     @property
     def relationship_change(self) -> float:
         """Change in relationship score."""
         return self.payload["relationship_change"]
-    
+
     def _get_event_category(self) -> EventCategory:
         """Character interaction events belong to the NARRATIVE category."""
         return EventCategory.NARRATIVE
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate character interaction specific requirements."""
         super()._custom_validation(errors)
-        
-        required_string_fields = ["story_id", "chapter_id", "character_id", "character_name", "interaction_type"]
+
+        required_string_fields = [
+            "story_id",
+            "chapter_id",
+            "character_id",
+            "character_name",
+            "interaction_type",
+        ]
         for field in required_string_fields:
             value = getattr(self, field)
             if not value or not isinstance(value, str):
-                errors.append(f"{field.replace('_', ' ').title()} must be a non-empty string")
-        
+                errors.append(
+                    f"{field.replace('_', ' ').title()} must be a non-empty string"
+                )
+
         if not isinstance(self.payload["interaction_data"], dict):
             errors.append("Interaction data must be a dictionary")
 
@@ -605,11 +632,11 @@ class CharacterInteractionEvent(DomainEvent):
 class StoryStartedEvent(DomainEvent):
     """
     Event fired when a user starts a new story.
-    
+
     This event marks the beginning of a user's journey through
     a particular narrative and is used for onboarding and analytics.
     """
-    
+
     def __init__(
         self,
         user_id: int,
@@ -621,11 +648,11 @@ class StoryStartedEvent(DomainEvent):
         tags: List[str] = None,
         source_service: str = "narrative",
         correlation_id: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initialize StoryStartedEvent.
-        
+
         Args:
             user_id: ID of the user starting the story
             story_id: ID of the story
@@ -650,51 +677,53 @@ class StoryStartedEvent(DomainEvent):
             "user_story_count": None,
             "recommended_by": None,
         }
-        
+
         super().__init__(
             user_id=user_id,
             source_service=source_service,
             correlation_id=correlation_id,
             priority=EventPriority.HIGH,  # Story starts are important milestones
             payload=payload,
-            **kwargs
+            **kwargs,
         )
-    
+
     @property
     def story_id(self) -> str:
         """ID of the story."""
         return self.payload["story_id"]
-    
+
     @property
     def story_title(self) -> str:
         """Title of the story."""
         return self.payload["story_title"]
-    
+
     @property
     def story_category(self) -> str:
         """Category of the story."""
         return self.payload["story_category"]
-    
+
     def _get_event_category(self) -> EventCategory:
         """Story started events belong to the NARRATIVE category."""
         return EventCategory.NARRATIVE
-    
+
     def _custom_validation(self, errors: List[str]) -> None:
         """Validate story started specific requirements."""
         super()._custom_validation(errors)
-        
+
         required_fields = ["story_id", "story_title", "story_category"]
         for field in required_fields:
             value = getattr(self, field)
             if not value or not isinstance(value, str):
-                errors.append(f"{field.replace('_', ' ').title()} must be a non-empty string")
+                errors.append(
+                    f"{field.replace('_', ' ').title()} must be a non-empty string"
+                )
 
 
 # Export all narrative events
 __all__ = [
     "StoryProgressEvent",
     "DecisionMadeEvent",
-    "ChapterCompletedEvent", 
+    "ChapterCompletedEvent",
     "NarrativeStateChangedEvent",
     "CharacterInteractionEvent",
     "StoryStartedEvent",

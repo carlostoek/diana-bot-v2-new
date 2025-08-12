@@ -5,7 +5,7 @@
 # Directories to exclude from security scanning
 exclude_dirs = [
     "tests",
-    "venv", 
+    "venv",
     ".venv",
     "build",
     "dist",

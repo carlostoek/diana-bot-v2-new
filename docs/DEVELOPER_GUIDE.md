@@ -406,7 +406,7 @@ logger = logging.getLogger(__name__)
 
 class ServiceProtocol(Protocol):
     """Protocol defining service interface."""
-    
+
     async def process_event(self, event: Event) -> Optional[Event]:
         """Process an event and optionally return a response event."""
         ...
@@ -414,14 +414,14 @@ class ServiceProtocol(Protocol):
 
 class ExampleService:
     """Example service implementing clean architecture principles.
-    
+
     This service demonstrates proper error handling, type annotations,
     and integration with the Event Bus system.
     """
-    
+
     def __init__(self, event_bus: EventBus, redis_client: Redis) -> None:
         """Initialize the service with dependencies.
-        
+
         Args:
             event_bus: The central event bus for communication
             redis_client: Redis client for caching
@@ -429,16 +429,16 @@ class ExampleService:
         self._event_bus = event_bus
         self._redis = redis_client
         self._logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
-    
+
     async def process_event(self, event: Event) -> Optional[Event]:
         """Process an incoming event with proper error handling.
-        
+
         Args:
             event: The event to process
-            
+
         Returns:
             Optional response event
-            
+
         Raises:
             ValueError: If event data is invalid
             RuntimeError: If processing fails
@@ -447,20 +447,20 @@ class ExampleService:
             # Validate input
             if not event.data:
                 raise ValueError("Event data cannot be empty")
-            
+
             # Process with timeout
             result = await asyncio.wait_for(
                 self._process_internal(event),
                 timeout=2.0
             )
-            
+
             self._logger.info(
                 "Successfully processed event",
                 extra={"event_id": event.id, "event_type": event.type}
             )
-            
+
             return result
-            
+
         except asyncio.TimeoutError:
             self._logger.error(
                 "Event processing timeout",
@@ -473,7 +473,7 @@ class ExampleService:
                 extra={"event_id": event.id, "error": str(e)}
             )
             raise
-    
+
     async def _process_internal(self, event: Event) -> Optional[Event]:
         """Internal processing logic."""
         # Implementation details...
@@ -494,22 +494,22 @@ from src.services.example import ExampleService
 
 class TestExampleService:
     """Test suite for ExampleService."""
-    
+
     @pytest.fixture
     def mock_event_bus(self) -> Mock:
         """Create mock event bus."""
         return Mock()
-    
+
     @pytest.fixture
     def mock_redis(self) -> Mock:
         """Create mock Redis client."""
         return Mock()
-    
+
     @pytest.fixture
     def service(self, mock_event_bus, mock_redis) -> ExampleService:
         """Create service instance with mocked dependencies."""
         return ExampleService(mock_event_bus, mock_redis)
-    
+
     @pytest.mark.asyncio
     async def test_process_event_success(self, service):
         """Test successful event processing."""
@@ -519,24 +519,24 @@ class TestExampleService:
             type="test.event",
             data={"key": "value"}
         )
-        
+
         # Act
         result = await service.process_event(event)
-        
+
         # Assert
         assert result is not None
         # Additional assertions...
-    
+
     @pytest.mark.asyncio
     async def test_process_event_empty_data_raises_error(self, service):
         """Test that empty event data raises ValueError."""
         # Arrange
         event = Event(id="test-id", type="test.event", data={})
-        
+
         # Act & Assert
         with pytest.raises(ValueError, match="Event data cannot be empty"):
             await service.process_event(event)
-    
+
     @pytest.mark.integration
     @pytest.mark.redis
     async def test_integration_with_real_redis(self):

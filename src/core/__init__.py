@@ -5,62 +5,60 @@ This package provides the foundational Event Bus architecture that serves
 as the backbone for all inter-service communication in Diana Bot V2.
 """
 
+from .events.admin import (
+    AdminActionPerformedEvent,
+    AnalyticsEvent,
+    ContentModerationEvent,
+    SystemMaintenanceEvent,
+    UserBannedEvent,
+    UserRegisteredEvent,
+)
+
 # Import new event system directly
 from .events.base import BaseEventWithValidation
-from .events.gamification import (
-    PointsAwardedEvent,
-    AchievementUnlockedEvent,
-    StreakUpdatedEvent,
-    PointsDeductedEvent,
-    LeaderboardChangedEvent,
-    DailyBonusClaimedEvent,
-)
-from .events.admin import (
-    UserRegisteredEvent,
-    AdminActionPerformedEvent,
-    UserBannedEvent,
-    ContentModerationEvent,
-    AnalyticsEvent,
-    SystemMaintenanceEvent,
-)
+from .events.catalog import EventCatalog, ServiceName, event_catalog
 from .events.core import (
+    ConfigurationChangedEvent,
+    ServiceHealthEvent,
     ServiceStartedEvent,
     ServiceStoppedEvent,
-    ServiceHealthEvent,
     SystemErrorEvent,
     UserActionEvent,
-    ConfigurationChangedEvent,
+)
+from .events.gamification import (
+    AchievementUnlockedEvent,
+    DailyBonusClaimedEvent,
+    LeaderboardChangedEvent,
+    PointsAwardedEvent,
+    PointsDeductedEvent,
+    StreakUpdatedEvent,
 )
 from .events.narrative import (
-    StoryProgressEvent,
-    DecisionMadeEvent,
     ChapterCompletedEvent,
-    NarrativeStateChangedEvent,
     CharacterInteractionEvent,
+    DecisionMadeEvent,
+    NarrativeStateChangedEvent,
+    StoryProgressEvent,
     StoryStartedEvent,
 )
-from .events.catalog import EventCatalog, ServiceName, event_catalog
+
 
 # Import legacy event structure for backward compatibility (delay import to avoid cycles)
 def _get_legacy_events():
     """Lazy import legacy events to avoid circular imports."""
     try:
+        from .events import AchievementUnlockedEvent as LegacyAchievementUnlockedEvent
+        from .events import AdminActionPerformedEvent as LegacyAdminActionPerformedEvent
+        from .events import BaseEvent, ErrorOccurredEvent, EventFactory, EventType
         from .events import (
-            BaseEvent,
-            EventType,
-            EventFactory,
-            # Legacy event classes
-            PointsAwardedEvent as LegacyPointsAwardedEvent,
-            AchievementUnlockedEvent as LegacyAchievementUnlockedEvent,
-            StreakUpdatedEvent as LegacyStreakUpdatedEvent,
-            StoryChapterStartedEvent,
-            StoryDecisionMadeEvent,
-            UserRegisteredEvent as LegacyUserRegisteredEvent,
-            UserSubscriptionChangedEvent,
-            AdminActionPerformedEvent as LegacyAdminActionPerformedEvent,
-            ServiceStartedEvent as LegacyServiceStartedEvent,
-            ErrorOccurredEvent,
+            PointsAwardedEvent as LegacyPointsAwardedEvent,  # Legacy event classes
         )
+        from .events import ServiceStartedEvent as LegacyServiceStartedEvent
+        from .events import StoryChapterStartedEvent, StoryDecisionMadeEvent
+        from .events import StreakUpdatedEvent as LegacyStreakUpdatedEvent
+        from .events import UserRegisteredEvent as LegacyUserRegisteredEvent
+        from .events import UserSubscriptionChangedEvent
+
         return {
             "BaseEvent": BaseEvent,
             "EventType": EventType,
@@ -78,6 +76,7 @@ def _get_legacy_events():
         }
     except ImportError:
         return {}
+
 
 # Export legacy events as module-level variables
 _legacy_events = _get_legacy_events()
@@ -135,10 +134,8 @@ __all__ = [
     "EventHandlingError",
     "EventValidationError",
     "EventSerializationError",
-    
     # Event System - Base Classes
     "BaseEventWithValidation",
-    
     # Gamification Events
     "PointsAwardedEvent",
     "PointsDeductedEvent",
@@ -146,7 +143,6 @@ __all__ = [
     "StreakUpdatedEvent",
     "LeaderboardChangedEvent",
     "DailyBonusClaimedEvent",
-    
     # Admin Events
     "UserRegisteredEvent",
     "UserBannedEvent",
@@ -154,7 +150,6 @@ __all__ = [
     "ContentModerationEvent",
     "AnalyticsEvent",
     "SystemMaintenanceEvent",
-    
     # Core Events
     "ServiceStartedEvent",
     "ServiceStoppedEvent",
@@ -162,7 +157,6 @@ __all__ = [
     "SystemErrorEvent",
     "UserActionEvent",
     "ConfigurationChangedEvent",
-    
     # Narrative Events
     "StoryProgressEvent",
     "DecisionMadeEvent",
@@ -170,18 +164,15 @@ __all__ = [
     "NarrativeStateChangedEvent",
     "CharacterInteractionEvent",
     "StoryStartedEvent",
-    
     # Event Catalog System
     "EventCatalog",
     "ServiceName",
     "event_catalog",
-    
     # Event Bus Implementation
     "RedisEventBus",
     "BaseEventHandler",
     "Subscription",
     "EventProcessingResult",
-    
     # Legacy compatibility (dynamically added)
     # These are added via _legacy_events if available:
     # "BaseEvent", "EventType", "EventFactory",

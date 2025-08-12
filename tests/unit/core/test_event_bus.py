@@ -19,13 +19,9 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 import pytest
 import pytest_asyncio
 
-from src.core.event_bus import BaseEventHandler, RedisEventBus, Subscription
 # Import from the new event system
-from src.core import (
-    AchievementUnlockedEvent,
-    PointsAwardedEvent,
-    UserRegisteredEvent,
-)
+from src.core import AchievementUnlockedEvent, PointsAwardedEvent, UserRegisteredEvent
+from src.core.event_bus import BaseEventHandler, RedisEventBus, Subscription
 
 # Try to import legacy components for backward compatibility
 try:
@@ -33,6 +29,7 @@ try:
 except ImportError:
     # Use new event system base
     from src.core import BaseEventWithValidation as BaseEvent
+
     BaseEvent = BaseEvent
     EventFactory = None
     EventType = None
