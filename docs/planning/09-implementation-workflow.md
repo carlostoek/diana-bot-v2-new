@@ -44,11 +44,11 @@ docs/planning/
 // .claude_code/project_context.json
 {
   "project_name": "Diana Bot V2",
-  "project_type": "telegram_bot_rewrite", 
+  "project_type": "telegram_bot_rewrite",
   "architecture": "event_driven_microservices",
   "primary_docs": [
     "docs/planning/01-PRD.md",
-    "docs/planning/04-technical-architecture.md", 
+    "docs/planning/04-technical-architecture.md",
     "docs/planning/06-implementation-plan.md"
   ],
   "current_phase": "foundation_setup",
@@ -263,7 +263,7 @@ TASK: Implement Diana Event Bus Foundation
 
 CONTEXT: You are the architecture lead for Diana Bot V2 complete rewrite.
 
-MISSION: Implement the core Event Bus system that will be the backbone 
+MISSION: Implement the core Event Bus system that will be the backbone
 of ALL other services. This must be implemented FIRST before any other service.
 
 REQUIREMENTS:
@@ -281,7 +281,7 @@ DELIVERABLES:
 - tests/unit/core/test_event_bus.py
 - Documentation in docs/architecture/event-bus.md
 
-Start with the IEvent interface and IEventBus interface, then implement 
+Start with the IEvent interface and IEventBus interface, then implement
 concrete EventBus class with Redis backend.
 """
 ```
@@ -309,12 +309,12 @@ claude-code --agent gamification-specialist --task "gamification-foundation"
 """
 TASK: Implement GamificationService from scratch
 
-CONTEXT: Event Bus is ready. Implement GamificationService that is 
+CONTEXT: Event Bus is ready. Implement GamificationService that is
 100% event-driven.
 
 MISSION: Implement points system, achievements, and leaderboards.
 
-DEPENDENCIES: 
+DEPENDENCIES:
 - Event Bus (completed)
 - IGamificationService interface (completed)
 
@@ -360,7 +360,7 @@ diana-bot-v2-new/
 │   │   ├── 04-technical-architecture.md
 │   │   ├── 05-testing-qa-plan.md
 │   │   ├── 06-implementation-plan.md
-│   │   ├── 
+│   │   ├──
 │   │   └── 08-executive-summary.md
 │   ├── architecture/                  # Docs técnicos en evolución
 │   │   ├── event-bus.md
@@ -385,7 +385,7 @@ diana-bot-v2-new/
 {
   "project": {
     "name": "Diana Bot V2",
-    "phase": "foundation_development", 
+    "phase": "foundation_development",
     "week": 1,
     "sprint": 1,
     "architecture": "event_driven_microservices",
@@ -393,7 +393,7 @@ diana-bot-v2-new/
   },
   "key_principles": [
     "Event Bus backbone for ALL communication",
-    "Clean Architecture with strict layer separation", 
+    "Clean Architecture with strict layer separation",
     "Test-driven development (>90% coverage)",
     "Python 3.11+ with modern features",
     "Rewrite completely - no legacy code reuse"
@@ -424,7 +424,7 @@ diana-bot-v2-new/
   },
   "active_stories": [
     {
-      "id": "ARCH-001", 
+      "id": "ARCH-001",
       "title": "Implement Event Bus Core",
       "assignee": "architecture-lead",
       "status": "in_progress",
@@ -432,7 +432,7 @@ diana-bot-v2-new/
     },
     {
       "id": "ARCH-002",
-      "title": "Define Service Interfaces", 
+      "title": "Define Service Interfaces",
       "assignee": "architecture-lead",
       "status": "pending",
       "story_points": 5
@@ -623,7 +623,7 @@ python -m black src/ --check
 - **Documenta decisiones** arquitectónicas inmediatamente
 - **Share interfaces** entre agentes ASAP
 
-### **2. Agent Coordination** 
+### **2. Agent Coordination**
 - **Daily standups** con cada agente activo
 - **Clear dependencies** - nunca duplicar trabajo
 - **Integration points** coordinados explícitamente

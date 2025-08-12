@@ -210,7 +210,7 @@ class GamificationHandler(BaseEventHandler):
     def __init__(self):
         super().__init__("gamification", "points_handler")
         self.add_supported_event_type(EventType.POINTS_AWARDED)
-    
+
     async def _process_event(self, event: IEvent) -> bool:
         # Process the event
         print(f"Processing {event.event_type}: {event.payload}")
@@ -312,18 +312,18 @@ class GamificationService:
     def __init__(self, event_bus: IEventBus):
         self.event_bus = event_bus
         self.handler = GamificationHandler()
-    
+
     async def initialize(self):
         # Subscribe to relevant events
         await self.event_bus.subscribe(
             EventType.STORY_CHAPTER_COMPLETED,
             self.handler
         )
-    
+
     async def award_points(self, user_id: int, amount: int, reason: str):
         # Business logic
         # ...
-        
+
         # Publish event
         event = PointsAwardedEvent(
             user_id=user_id,
@@ -367,7 +367,7 @@ class EventStore:
     async def store_critical_event(self, event: IEvent):
         if event.priority in [EventPriority.HIGH, EventPriority.CRITICAL]:
             await self.database.store_event(event.to_dict())
-    
+
     async def replay_events(self, start_time: datetime):
         events = await self.database.get_events(start_time=start_time)
         for event_data in events:
@@ -383,20 +383,20 @@ class UserRegistrationSaga(BaseEventHandler):
     def __init__(self):
         super().__init__("user_saga", "registration_saga")
         self.add_supported_event_type(EventType.USER_REGISTERED)
-    
+
     async def _process_event(self, event: UserRegisteredEvent):
         # Step 1: Initialize gamification profile
         gamification_event = # Create gamification init event
         await self.event_bus.publish(gamification_event)
-        
+
         # Step 2: Send welcome message
         welcome_event = # Create welcome event
         await self.event_bus.publish(welcome_event)
-        
+
         # Step 3: Start onboarding flow
         onboarding_event = # Create onboarding event
         await self.event_bus.publish(onboarding_event)
-        
+
         return True
 ```
 
@@ -446,7 +446,7 @@ class TestEventBus:
     async def test_publish_event(self, mock_redis, event_bus):
         event = PointsAwardedEvent(user_id=123, points_amount=100, action_type="test")
         result = await event_bus.publish(event)
-        
+
         assert result is True
         mock_redis.publish.assert_called_once()
 ```
@@ -460,13 +460,13 @@ Test complete workflows:
 async def test_event_workflow(self, event_bus):
     handler = TestHandler()
     await event_bus.subscribe(EventType.POINTS_AWARDED, handler)
-    
+
     event = PointsAwardedEvent(user_id=123, points_amount=100, action_type="test")
     await event_bus.publish(event)
-    
+
     # Wait for processing
     await asyncio.sleep(0.1)
-    
+
     assert len(handler.processed_events) == 1
 ```
 
@@ -475,15 +475,15 @@ async def test_event_workflow(self, event_bus):
 Validate system behavior under load:
 
 ```python
-@pytest.mark.asyncio 
+@pytest.mark.asyncio
 async def test_high_throughput(self, event_bus):
     events = [create_test_event() for _ in range(1000)]
-    
+
     start_time = time.time()
     for event in events:
         await event_bus.publish(event)
     duration = time.time() - start_time
-    
+
     assert duration < 5.0  # Should handle 1000 events in under 5 seconds
 ```
 
@@ -530,7 +530,7 @@ spec:
             memory: "256Mi"
             cpu: "250m"
           limits:
-            memory: "512Mi" 
+            memory: "512Mi"
             cpu: "500m"
 ```
 
@@ -548,7 +548,7 @@ groups:
           severity: warning
         annotations:
           summary: "Event processing falling behind"
-      
+
       - alert: HighEventErrorRate
         expr: rate(events_failed_total[5m]) / rate(events_total[5m]) > 0.05
         for: 1m

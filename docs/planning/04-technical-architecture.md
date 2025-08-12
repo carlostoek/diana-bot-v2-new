@@ -134,15 +134,15 @@ class TelegramAdapter:
     Punto de entrada principal para todas las interacciones de Telegram.
     Maneja el lifecycle del bot y coordina con Diana Master System.
     """
-    
+
     def __init__(self, diana_master: DianaMasterSystem):
         self.diana_master = diana_master
         self.handlers = HandlerRegistry()
         self.middleware = MiddlewareStack()
-    
+
     async def handle_message(self, message: Message) -> None:
         """Route message a través del Diana Master System"""
-        
+
     async def handle_callback(self, callback: CallbackQuery) -> None:
         """Process callback queries from inline keyboards"""
 ```
@@ -154,7 +154,7 @@ class HandlerRegistry:
     Registry central para todos los handlers de Telegram.
     Permite dynamic registration y unregistration.
     """
-    
+
     def register_command(self, command: str, handler: Callable) -> None:
     def register_callback(self, pattern: str, handler: Callable) -> None:
     def get_handler(self, event_type: str, data: str) -> Optional[Callable]:
@@ -167,7 +167,7 @@ class DynamicKeyboardFactory:
     Factory para generar keyboards adaptativas basadas en user context.
     Integrado con Diana Master System para personalización.
     """
-    
+
     def create_main_menu(self, user_context: UserContext) -> InlineKeyboardMarkup:
     def create_gamification_menu(self, user_id: int) -> InlineKeyboardMarkup:
     def create_admin_menu(self, admin_level: AdminLevel) -> InlineKeyboardMarkup:
@@ -197,13 +197,13 @@ class AdaptiveContextEngine:
     AI engine que analiza user behavior y determina context óptimo
     para personalización de la experiencia.
     """
-    
+
     async def analyze_user_context(self, user_id: int) -> UserContext:
         """Analiza comportamiento reciente y estado emocional"""
-        
+
     async def detect_user_mood(self, interactions: List[Interaction]) -> UserMoodState:
         """Machine learning para detectar estado de ánimo actual"""
-        
+
     def predict_next_action(self, context: UserContext) -> List[ActionPrediction]:
         """Predice qué acciones es más probable que tome el usuario"""
 ```
@@ -215,13 +215,13 @@ class DianaMasterInterface:
     Interface principal que genera experiencias completamente personalizadas
     para cada usuario basado en su context y mood.
     """
-    
+
     async def create_adaptive_interface(self, user_id: int, trigger: str) -> InterfaceResponse:
         """Genera UI completamente personalizada"""
-        
+
     async def generate_smart_greeting(self, context: UserContext) -> str:
         """Saludo inteligente basado en mood y historial"""
-        
+
     async def generate_contextual_dashboard(self, context: UserContext) -> Dashboard:
         """Dashboard adaptativo con content relevante"""
 ```
@@ -233,7 +233,7 @@ class PersonalizationEngine:
     Machine learning engine para personalización continua
     basada en user behavior patterns.
     """
-    
+
     def train_user_model(self, user_id: int, interactions: List[Interaction]) -> None:
     def get_content_recommendations(self, user_id: int) -> List[ContentRecommendation]:
     def optimize_notification_timing(self, user_id: int) -> NotificationSchedule:
@@ -261,10 +261,10 @@ class PersonalizationEngine:
 ```python
 # Service Interface
 class GamificationService:
-    def __init__(self, points_engine: PointsEngine, 
+    def __init__(self, points_engine: PointsEngine,
                  achievement_engine: AchievementEngine,
                  leaderboard_service: LeaderboardService):
-        
+
     async def award_points(self, user_id: int, action: str, amount: int) -> PointsResult:
     async def check_achievements(self, user_id: int, event: GameEvent) -> List[Achievement]:
     async def get_leaderboards(self, timeframe: str) -> LeaderboardData:
@@ -273,10 +273,10 @@ class GamificationService:
 # Core Engines
 class PointsEngine:
     """Handles all point calculations, multipliers, and anti-abuse"""
-    
+
 class AchievementEngine:
     """Evaluates achievement conditions and unlocks"""
-    
+
 class LeaderboardService:
     """Efficient leaderboard calculations with caching"""
 ```
@@ -342,7 +342,7 @@ class NarrativeService:
     def __init__(self, story_engine: StoryEngine,
                  character_system: CharacterSystem,
                  decision_engine: DecisionEngine):
-        
+
     async def get_current_chapter(self, user_id: int) -> ChapterContent:
     async def process_decision(self, user_id: int, decision: Decision) -> DecisionResult:
     async def get_character_interaction(self, user_id: int, character_id: str) -> Dialogue:
@@ -350,10 +350,10 @@ class NarrativeService:
 
 class StoryEngine:
     """Manages story progression and branching narratives"""
-    
+
 class CharacterSystem:
     """Handles NPC personalities, relationships, and memory"""
-    
+
 class DecisionEngine:
     """Processes user choices and calculates consequences"""
 ```
@@ -413,7 +413,7 @@ class AdminService:
     def __init__(self, user_manager: UserManager,
                  analytics_engine: AnalyticsEngine,
                  content_manager: ContentManager):
-        
+
     async def get_dashboard_metrics(self) -> DashboardData:
     async def manage_user(self, admin_id: int, action: AdminAction) -> ActionResult:
     async def generate_report(self, report_type: str, params: dict) -> Report:
@@ -421,10 +421,10 @@ class AdminService:
 
 class UserManager:
     """Comprehensive user management and moderation tools"""
-    
+
 class AnalyticsEngine:
     """Real-time analytics and business intelligence"""
-    
+
 class ContentManager:
     """Dynamic content management without code deployment"""
 ```
@@ -440,13 +440,13 @@ class EventBus:
     Redis-based pub/sub system para loose coupling entre services.
     Garantiza eventual consistency y scalability.
     """
-    
+
     async def publish(self, event: Event) -> None:
         """Publish event to interested subscribers"""
-        
+
     async def subscribe(self, event_type: str, handler: EventHandler) -> None:
         """Subscribe to specific event types"""
-        
+
     async def unsubscribe(self, event_type: str, handler: EventHandler) -> None:
         """Unsubscribe from events"""
 
@@ -479,7 +479,7 @@ class DianaValidationClient:
     Integration con external Diana AI service para
     content validation y advanced personalization.
     """
-    
+
     async def validate_content(self, content: str) -> ValidationResult:
     async def get_personality_analysis(self, user_data: dict) -> PersonalityProfile:
     async def generate_response(self, context: dict) -> AIResponse:
@@ -492,7 +492,7 @@ class PaymentService:
     Abstraction layer para multiple payment providers.
     Supports Stripe, PayPal, y otros.
     """
-    
+
     async def create_subscription(self, user_id: int, plan: str) -> SubscriptionResult:
     async def process_payment(self, payment_data: PaymentData) -> PaymentResult:
     async def cancel_subscription(self, subscription_id: str) -> CancelResult:
@@ -568,14 +568,14 @@ class CacheManager:
     - L2: Redis distributed cache  
     - L3: Database with optimized queries
     """
-    
+
     # Cache Keys Design
     USER_PROFILE = "user:profile:{user_id}"
     USER_CONTEXT = "user:context:{user_id}"
     LEADERBOARD = "leaderboard:{type}:{timeframe}"
     STORY_CONTENT = "story:chapter:{chapter_id}"
     ACHIEVEMENT_PROGRESS = "achievements:progress:{user_id}"
-    
+
     # Cache TTL Settings
     CACHE_TTLS = {
         "user_profile": 3600,      # 1 hour
@@ -592,7 +592,7 @@ class SessionManager:
     """
     Redis-based session management para user state y temporary data.
     """
-    
+
     async def create_session(self, user_id: int) -> SessionToken:
     async def get_session_data(self, session_token: str) -> SessionData:
     async def update_session(self, session_token: str, data: dict) -> None:
@@ -611,13 +611,13 @@ class SecurityManager:
     """
     Multi-layer security implementation.
     """
-    
+
     def authenticate_user(self, telegram_data: dict) -> AuthResult:
         """Validate Telegram authentication data"""
-        
+
     def authorize_admin_action(self, user_id: int, action: str) -> bool:
         """Check admin permissions for specific actions"""
-        
+
     def validate_rate_limit(self, user_id: int, action: str) -> bool:
         """Prevent abuse through rate limiting"""
 ```
@@ -634,7 +634,7 @@ class InputValidator:
     """
     Comprehensive input validation para prevent injection attacks.
     """
-    
+
     def validate_telegram_input(self, message: str) -> ValidationResult:
     def sanitize_user_content(self, content: str) -> str:
     def validate_admin_input(self, admin_data: dict) -> ValidationResult:
@@ -646,7 +646,7 @@ class AuditLogger:
     """
     Immutable audit trail para compliance y security monitoring.
     """
-    
+
     async def log_user_action(self, user_id: int, action: str, context: dict) -> None:
     async def log_admin_action(self, admin_id: int, action: str, target: str) -> None:
     async def log_security_event(self, event_type: str, details: dict) -> None:
@@ -662,17 +662,17 @@ class MonitoringSystem:
     """
     Comprehensive monitoring y alerting system.
     """
-    
+
     # Application Metrics
     def track_response_time(self, endpoint: str, duration: float) -> None:
     def track_user_action(self, user_id: int, action: str) -> None:
     def track_error_rate(self, service: str, error_type: str) -> None:
-    
+
     # Business Metrics  
     def track_user_engagement(self, user_id: int, session_data: dict) -> None:
     def track_conversion_event(self, user_id: int, event_type: str) -> None:
     def track_revenue_metric(self, amount: float, source: str) -> None:
-    
+
     # System Health
     def check_service_health(self, service_name: str) -> HealthStatus:
     def check_database_performance(self) -> DBPerformanceMetrics:
@@ -692,7 +692,7 @@ groups:
           severity: warning
         annotations:
           summary: "High response time detected"
-          
+
       - alert: ErrorRateHigh  
         expr: rate(errors_total[5m]) / rate(requests_total[5m]) > 0.01
         for: 5m
@@ -700,7 +700,7 @@ groups:
           severity: critical
         annotations:
           summary: "Error rate is above 1%"
-          
+
       - alert: UserEngagementDrop
         expr: avg_over_time(daily_active_users[1d]) < avg_over_time(daily_active_users[7d]) * 0.8
         for: 30m
@@ -774,7 +774,7 @@ class EnvironmentConfig:
     """
     Environment-specific configuration management.
     """
-    
+
     # Development Environment
     DEVELOPMENT = {
         "database_url": "postgresql://localhost:5432/diana_dev",
@@ -782,7 +782,7 @@ class EnvironmentConfig:
         "log_level": "DEBUG",
         "enable_debug_toolbar": True
     }
-    
+
     # Staging Environment  
     STAGING = {
         "database_url": os.getenv("STAGING_DATABASE_URL"),
@@ -790,11 +790,11 @@ class EnvironmentConfig:
         "log_level": "INFO",
         "enable_debug_toolbar": False
     }
-    
+
     # Production Environment
     PRODUCTION = {
         "database_url": os.getenv("DATABASE_URL"),
-        "redis_url": os.getenv("REDIS_URL"), 
+        "redis_url": os.getenv("REDIS_URL"),
         "log_level": "WARNING",
         "enable_debug_toolbar": False,
         "ssl_required": True
@@ -840,23 +840,23 @@ class TestingFramework:
     """
     Comprehensive testing strategy covering all layers.
     """
-    
+
     # Unit Tests
     def test_individual_components(self):
         """Test individual functions and methods in isolation"""
-        
+
     # Integration Tests  
     def test_service_interactions(self):
         """Test communication between services"""
-        
+
     # End-to-End Tests
     def test_complete_user_flows(self):
         """Test complete user journeys from start to finish"""
-        
+
     # Performance Tests
     def test_load_handling(self):
         """Test system behavior under load"""
-        
+
     # Security Tests
     def test_security_vulnerabilities(self):
         """Test for common security issues"""
@@ -870,7 +870,7 @@ class TestingFramework:
 ```sql
 -- Query Optimization Examples
 -- Efficient leaderboard query with pagination
-SELECT u.username, ug.total_points, 
+SELECT u.username, ug.total_points,
        ROW_NUMBER() OVER (ORDER BY ug.total_points DESC) as rank
 FROM user_gamification ug
 JOIN users u ON u.id = ug.user_id
@@ -879,7 +879,7 @@ ORDER BY ug.total_points DESC
 LIMIT 10 OFFSET 0;
 
 -- Efficient achievement progress query
-SELECT a.name, a.description, 
+SELECT a.name, a.description,
        CASE WHEN ua.user_id IS NOT NULL THEN TRUE ELSE FALSE END as unlocked
 FROM achievements a
 LEFT JOIN user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1
@@ -892,19 +892,19 @@ class PerformanceOptimizer:
     """
     Various performance optimization techniques.
     """
-    
+
     # Database Connection Pooling
     async def setup_connection_pool(self):
         """Configure optimal database connection pooling"""
-        
+
     # Query Result Caching
     async def cache_expensive_queries(self):
         """Cache results of expensive database queries"""
-        
+
     # Content Delivery Optimization
     async def optimize_content_delivery(self):
         """Optimize delivery of static content and media"""
-        
+
     # API Response Compression
     async def enable_response_compression(self):
         """Enable gzip compression for API responses"""
@@ -920,32 +920,32 @@ class MigrationPlan:
     """
     Step-by-step plan para migrate from legacy codebase.
     """
-    
+
     # Phase 1: Infrastructure Setup
     def setup_new_infrastructure(self):
         """Set up new database, services, and deployment pipeline"""
-        
+
     # Phase 2: Service-by-Service Migration
     def migrate_gamification_service(self):
         """Migrate gamification logic to new architecture"""
-        
+
     def migrate_narrative_service(self):
         """Migrate story and character systems"""
-        
+
     def migrate_admin_service(self):
         """Migrate admin panel and user management"""
-        
+
     # Phase 3: Data Migration
     def migrate_user_data(self):
         """Safely migrate existing user data"""
-        
+
     def migrate_content_data(self):
         """Migrate story content and achievements"""
-        
+
     # Phase 4: Gradual Rollout
     def implement_feature_flags(self):
         """Use feature flags for gradual rollout"""
-        
+
     def implement_blue_green_deployment(self):
         """Zero-downtime deployment strategy"""
 ```
@@ -960,16 +960,16 @@ class TechnicalDebtTracker:
     """
     Track and manage technical debt throughout development.
     """
-    
+
     def measure_code_complexity(self) -> ComplexityMetrics:
         """Measure cyclomatic complexity and maintainability"""
-        
+
     def identify_code_smells(self) -> List[CodeSmell]:
         """Identify areas needing refactoring"""
-        
+
     def track_test_coverage(self) -> CoverageReport:
         """Monitor test coverage across all modules"""
-        
+
     def analyze_dependencies(self) -> DependencyReport:
         """Analyze dependency health and security"""
 ```

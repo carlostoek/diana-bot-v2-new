@@ -1,10 +1,10 @@
 {
   "project_name": "Diana Bot V2",
-  "project_type": "telegram_bot_rewrite", 
+  "project_type": "telegram_bot_rewrite",
   "architecture": "event_driven_microservices",
   "primary_docs": [
     "docs/planning/01-PRD.md",
-    "docs/planning/04-technical-architecture.md", 
+    "docs/planning/04-technical-architecture.md",
     "docs/planning/06-implementation-plan.md"
   ],
   "current_phase": "foundation_setup",

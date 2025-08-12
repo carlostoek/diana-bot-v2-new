@@ -285,17 +285,17 @@ RISK_REVIEW_SCHEDULE = {
         "participants": ["Tech Lead", "Project Manager"],
         "focus": ["Critical risks", "New risks", "Escalations"]
     },
-    
+
     "weekly_risk_review": {
-        "frequency": "Weekly", 
+        "frequency": "Weekly",
         "duration": "1 hour",
         "participants": ["Full Team"],
         "focus": ["All active risks", "Mitigation progress", "New risk identification"]
     },
-    
+
     "monthly_risk_board": {
         "frequency": "Monthly",
-        "duration": "2 hours", 
+        "duration": "2 hours",
         "participants": ["Team + Stakeholders"],
         "focus": ["Strategic risks", "Portfolio view", "Resource allocation"]
     }
@@ -309,17 +309,17 @@ RISK_METRICS = {
         "target": "2+ new risks identified per week",
         "purpose": "Ensure proactive risk identification"
     },
-    
+
     "mitigation_success_rate": {
         "target": "90%+ of high/critical risks successfully mitigated",
         "purpose": "Measure effectiveness of mitigation strategies"
     },
-    
+
     "risk_impact_realization": {
         "target": "<10% of identified risks materialize with full impact",
         "purpose": "Validate risk assessment accuracy"
     },
-    
+
     "surprise_incident_rate": {
         "target": "Zero incidents not previously identified as risks",
         "purpose": "Measure comprehensiveness of risk identification"
@@ -335,13 +335,13 @@ RISK_COMMUNICATION = {
         "update_frequency": "Real-time",
         "content": ["Risk heat map", "Top 5 risks", "Mitigation status"]
     },
-    
+
     "weekly_risk_report": {
         "audience": "Stakeholders",
         "format": "Email summary",
         "content": ["New risks", "Status changes", "Escalations needed"]
     },
-    
+
     "critical_risk_alert": {
         "audience": "Executive Team",
         "trigger": "Score 12+ risk identified or materialized",
@@ -363,21 +363,21 @@ INCIDENT_LEVELS = {
         "team": "Full team + management",
         "communication": "Hourly updates to all stakeholders"
     },
-    
+
     "P1_high": {
         "definition": "Major functionality broken, impacting >50% users",
-        "response_time": "1 hour", 
+        "response_time": "1 hour",
         "team": "Core technical team",
         "communication": "Every 4 hours to stakeholders"
     },
-    
+
     "P2_medium": {
         "definition": "Minor functionality issues, workaround available",
         "response_time": "4 hours",
         "team": "Relevant specialists",
         "communication": "Daily updates"
     },
-    
+
     "P3_low": {
         "definition": "Cosmetic issues, no functional impact",
         "response_time": "Next business day",
@@ -441,13 +441,13 @@ LESSONS_LEARNED = {
         "context": "Complex ML systems require significant tuning time",
         "recommendation": "Implement basic functionality first, enhance with ML later"
     },
-    
+
     "telegram_api_integration": {
         "lesson": "Rate limiting is stricter than documented",
         "context": "Production rate limits differ from sandbox",
         "recommendation": "Test with production-level traffic early"
     },
-    
+
     "team_scaling": {
         "lesson": "Knowledge transfer takes longer than expected",
         "context": "New team members need 2-3 weeks to become productive",
@@ -464,13 +464,13 @@ RISK_PATTERNS = {
         "common_triggers": ["API version updates", "Service provider changes", "Rate limiting"],
         "standard_mitigations": ["Wrapper abstractions", "Multiple providers", "Graceful degradation"]
     },
-    
+
     "performance_degradation": {
         "pattern": "System performance degrades under load",
         "common_triggers": ["User growth", "Data volume increase", "Feature complexity"],
         "standard_mitigations": ["Load testing", "Performance monitoring", "Caching layers"]
     },
-    
+
     "scope_creep": {
         "pattern": "Project scope expands beyond original plan",
         "common_triggers": ["Stakeholder requests", "Market changes", "Competitive pressure"],
@@ -488,7 +488,7 @@ RISK_PATTERNS = {
 graph TD
     A[Risk Identified] --> B{Risk Assessment}
     B --> C[Probability Evaluation]
-    B --> D[Impact Evaluation] 
+    B --> D[Impact Evaluation]
     C --> E[Risk Score Calculation]
     D --> E
     E --> F{Score >= 8?}
@@ -512,17 +512,17 @@ WEEKLY_RISK_REVIEW_AGENDA = {
         "duration": "15 minutes",
         "activity": "Review all active risks for status changes"
     },
-    
+
     "2_new_risk_identification": {
-        "duration": "15 minutes", 
+        "duration": "15 minutes",
         "activity": "Brainstorm new risks based on weekly progress"
     },
-    
+
     "3_mitigation_progress": {
         "duration": "20 minutes",
         "activity": "Review mitigation action progress and effectiveness"
     },
-    
+
     "4_escalation_decisions": {
         "duration": "10 minutes",
         "activity": "Decide on risks that need escalation to stakeholders"

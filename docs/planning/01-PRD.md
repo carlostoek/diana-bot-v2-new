@@ -82,7 +82,7 @@ Un ecosistema inteligente que adapta dinámicamente la experiencia del usuario b
 
 #### F1: Sistema de Onboarding Inteligente
 - **Historia**: Como nuevo usuario, quiero una introducción personalizada para entender rápidamente el valor del bot
-- **Aceptación**: 
+- **Aceptación**:
   - Onboarding completado en <3 minutos
   - Personalización basada en primeras interacciones
   - Tutorial interactivo con ejemplos reales
@@ -129,7 +129,7 @@ Un ecosistema inteligente que adapta dinámicamente la experiencia del usuario b
 
 ## 🎭 Personas y Casos de Uso
 
-### Persona 1: "Alex el Explorador" 
+### Persona 1: "Alex el Explorador"
 **Demografía**: 23 años, estudiante universitario, gamer casual
 
 **Un día típico con Diana Bot**:

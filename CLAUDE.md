@@ -24,16 +24,22 @@ Diana Bot V2 is a sophisticated Telegram bot that combines entertainment, gamifi
 - **Monetization Service**: VIP subscriptions, payment processing, revenue tracking
 - **Event Bus**: Redis pub/sub for inter-service communication
 
-## Development Commands (To be implemented)
+## Development Commands
 
-When code is implemented, these commands are planned:
-- `docker-compose up -d` - Start development environment (PostgreSQL, Redis)
-- `pytest` - Run unit tests
-- `pytest tests/integration/` - Run integration tests
-- `python -m pytest --cov=src --cov-report=html` - Run tests with coverage
+Active development commands:
+- `source venv/bin/activate` - Activate virtual environment
+- `pytest` - Run unit tests (26 tests currently passing)
+- `pytest --cov=src --cov-report=html` - Run tests with coverage
 - `black src/ tests/` - Format code
 - `pylint src/` - Lint code
 - `mypy src/` - Type checking
+- `flake8 src/` - Additional linting
+- `pre-commit run --all-files` - Run all quality checks
+- `pre-commit install` - Install pre-commit hooks
+
+Planned commands:
+- `docker-compose up -d` - Start development environment (PostgreSQL, Redis)
+- `pytest tests/integration/` - Run integration tests
 - `alembic upgrade head` - Run database migrations
 
 ## Key Planning Documents
@@ -41,6 +47,7 @@ When code is implemented, these commands are planned:
 - `docs/planning/01-PRD.md` - Comprehensive Product Requirements Document
 - `docs/planning/04-technical-architecture.md` - Detailed technical architecture
 - `docs/planning/06-implementation-plan.md` - 24-week implementation timeline
+- `docs/DEVELOPER_GUIDE.md` - Complete development setup and troubleshooting guide
 
 ## Development Principles (from Architecture Doc)
 
@@ -83,6 +90,22 @@ When code is implemented, these commands are planned:
 - GDPR compliance with data portability and right to erasure
 - Audit logging for all user and admin actions
 
+## Error Handling and Troubleshooting
+
+**IMPORTANT**: When encountering development errors, build failures, test failures, or quality check issues, ALWAYS consult `docs/DEVELOPER_GUIDE.md` first for troubleshooting guidance before taking action. The guide contains:
+
+- Common error patterns and solutions
+- Environment setup troubleshooting  
+- Tool configuration fixes
+- Testing and quality check guidance
+- Step-by-step resolution procedures
+
 ## Current Status
 
-This repository contains comprehensive planning documentation but no implementation code. The next step would be to begin Phase 1 of implementation starting with infrastructure setup and core architecture.
+This repository has a solid foundation with Event Bus implementation and comprehensive testing. Active development includes:
+
+- ✅ Event-driven architecture foundation (Event Bus implemented)
+- ✅ Complete test suite (26 tests passing) 
+- ✅ Quality assurance tools configured (flake8, mypy, pylint, pre-commit)
+- ✅ Development environment ready
+- 🔄 Ready for Phase 1 implementation continuation

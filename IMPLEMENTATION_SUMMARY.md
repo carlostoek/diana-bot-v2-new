@@ -134,7 +134,7 @@ class GamificationHandler(BaseEventHandler):
     def __init__(self):
         super().__init__("gamification", "points_handler")
         self.add_supported_event_type(EventType.POINTS_AWARDED)
-    
+
     async def _process_event(self, event: IEvent) -> bool:
         # Process the event
         print(f"Processing points: {event.payload}")

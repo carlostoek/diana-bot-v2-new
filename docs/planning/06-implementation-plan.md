@@ -953,13 +953,13 @@ TEAM_CAPACITY = {
     "working_days_per_sprint": 10,
     "hours_per_day": 8,
     "total_hours_per_sprint": 640,  # 8 * 10 * 8
-    
+
     # Capacity allocation
     "development_hours": 480,       # 75% - actual development
     "meetings_ceremonies": 64,      # 10% - scrum ceremonies
     "research_learning": 64,        # 10% - research, learning
     "buffer_unplanned": 32,         # 5% - buffer for unplanned work
-    
+
     # Story points velocity
     "target_velocity": 40,          # 40 SP per 2-week sprint
     "story_points_per_hour": 0.08   # 1 SP = ~12.5 hours
@@ -972,18 +972,18 @@ TIMELINE_ADJUSTMENTS = {
     "base_timeline_weeks": 24,
     "risk_buffer": 4,               # 4 weeks buffer (16.7%)
     "total_timeline_weeks": 28,
-    
+
     "risk_factors": {
         "technical_complexity": 1.1,    # 10% overhead
         "team_learning_curve": 1.05,    # 5% overhead  
         "integration_challenges": 1.08,  # 8% overhead
         "external_dependencies": 1.05    # 5% overhead
     },
-    
+
     "mitigation_strategies": [
         "Weekly risk assessment",
         "Parallel development streams",
-        "Early integration testing", 
+        "Early integration testing",
         "Vendor evaluation multiple options"
     ]
 }
@@ -1001,13 +1001,13 @@ DEVELOPMENT_KPIS = {
         "velocity_consistency": 0.15,       # <15% variance
         "commitment_accuracy": 0.90         # 90% stories completed
     },
-    
+
     "quality_metrics": {
         "code_coverage": 0.90,              # 90% coverage
         "bug_escape_rate": 0.001,           # <0.1% bugs to production
         "technical_debt_ratio": 0.15        # <15% technical debt
     },
-    
+
     "delivery_metrics": {
         "on_time_delivery": 0.95,           # 95% on-time
         "scope_creep": 0.10,                # <10% scope changes
@@ -1026,14 +1026,14 @@ BUSINESS_KPIS = {
         "retention_day_7": 0.40,            # 40% day-7 retention
         "retention_day_30": 0.20             # 20% day-30 retention
     },
-    
+
     "monetization": {
         "conversion_rate": 0.15,             # 15% free-to-paid
         "monthly_recurring_revenue": 50000,  # $50K MRR target
         "customer_lifetime_value": 60,       # $60 average LTV
         "churn_rate": 0.05                   # <5% monthly churn
     },
-    
+
     "operational": {
         "uptime_sla": 0.999,                 # 99.9% uptime
         "response_time_p95": 2.0,            # <2s response time
@@ -1054,7 +1054,7 @@ BUSINESS_KPIS = {
 TECHNICAL_RISKS = {
     "diana_master_system_complexity": {
         "probability": "medium",
-        "impact": "high", 
+        "impact": "high",
         "mitigation": [
             "Prototype core algorithms early",
             "Incremental complexity addition",
@@ -1062,7 +1062,7 @@ TECHNICAL_RISKS = {
             "External ML service evaluation"
         ]
     },
-    
+
     "telegram_api_limitations": {
         "probability": "medium",
         "impact": "medium",
@@ -1073,7 +1073,7 @@ TECHNICAL_RISKS = {
             "Backup communication channels"
         ]
     },
-    
+
     "performance_scalability": {
         "probability": "low",
         "impact": "high",
@@ -1100,9 +1100,9 @@ SCHEDULE_RISKS = {
             "Stakeholder education on impacts"
         ]
     },
-    
+
     "external_dependencies": {
-        "probability": "medium", 
+        "probability": "medium",
         "impact": "medium",
         "mitigation": [
             "Early vendor evaluation",
@@ -1111,7 +1111,7 @@ SCHEDULE_RISKS = {
             "Regular dependency health checks"
         ]
     },
-    
+
     "team_availability": {
         "probability": "medium",
         "impact": "high",
@@ -1134,7 +1134,7 @@ SCHEDULE_RISKS = {
 
 #### Plan B: Minor Delays (Weeks 1-26)
 - **Triggers**: 1-2 week delays, scope adjustments needed
-- **Actions**: 
+- **Actions**:
   - Prioritize MVP features
   - Defer nice-to-have features
   - Increase team focus time
@@ -1169,23 +1169,23 @@ SCRUM_CEREMONIES = {
         "participants": "Full team + Product Owner",
         "outcomes": ["Sprint goal", "Sprint backlog", "Capacity commitment"]
     },
-    
+
     "daily_standup": {
         "frequency": "Daily",
-        "duration": "15 minutes", 
+        "duration": "15 minutes",
         "participants": "Development team",
         "outcomes": ["Progress update", "Blockers identification", "Help requests"]
     },
-    
+
     "sprint_review": {
         "frequency": "Every 2 weeks",
         "duration": "2 hours",
         "participants": "Team + Stakeholders",
         "outcomes": ["Demo deliverables", "Stakeholder feedback", "Next priorities"]
     },
-    
+
     "sprint_retrospective": {
-        "frequency": "Every 2 weeks", 
+        "frequency": "Every 2 weeks",
         "duration": "1.5 hours",
         "participants": "Development team",
         "outcomes": ["Process improvements", "Team agreements", "Action items"]
@@ -1201,13 +1201,13 @@ STAKEHOLDER_UPDATES = {
         "format": "Email summary",
         "content": ["Progress summary", "Upcoming milestones", "Risks/issues", "Metrics update"]
     },
-    
+
     "monthly_demo": {
         "audience": "All stakeholders",
         "format": "Live demo session",
         "content": ["Feature demonstrations", "User feedback", "Business metrics", "Roadmap updates"]
     },
-    
+
     "quarterly_review": {
         "audience": "Executive team",
         "format": "Presentation + Q&A",

@@ -1,0 +1,59 @@
+# Diana Bot V2 - Flake8 Configuration
+# Python linting and style guide enforcement
+
+[flake8]
+# Maximum line length (compatible with Black)
+max-line-length = 88
+
+# Error codes to ignore
+# E203: Whitespace before ':' (conflicts with Black)
+# W503: Line break before binary operator (conflicts with Black)
+# E501: Line too long (handled by Black)
+# D100: Missing docstring in public module (too strict for all modules)
+# D104: Missing docstring in public package (too strict for all packages)
+extend-ignore = E203, W503, E501, D100, D104
+
+# Directories to exclude from checking
+exclude = 
+    .git,
+    __pycache__,
+    .pytest_cache,
+    .mypy_cache,
+    .tox,
+    venv,
+    .venv,
+    build,
+    dist,
+    *.egg-info,
+    migrations,
+    docs/_build
+
+# Enable additional flake8 plugins
+enable-extensions = 
+    # flake8-bugbear
+    B,
+    # flake8-docstrings
+    D,
+    # flake8-import-order
+    I
+
+# Import order style (compatible with isort black profile)
+import-order-style = google
+application-import-names = src,diana,tests
+
+# Complexity settings
+max-complexity = 8
+max-cognitive-complexity = 8
+
+# Docstring settings
+docstring-convention = google
+require-return-section-when-returning-nothing = false
+
+# Per-file ignores
+per-file-ignores =
+    # Tests can be more flexible with docstrings and complexity
+    tests/*:D,B011,B018
+    # __init__.py files don't need docstrings
+    __init__.py:D104
+    # Examples can be simpler
+    examples/*:D,B
