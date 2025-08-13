@@ -719,6 +719,192 @@ class StoryStartedEvent(DomainEvent):
                 )
 
 
+class StoryCompletionEvent(DomainEvent):
+    """
+    Event fired when a user completes an entire story.
+
+    This is a major milestone event that triggers significant rewards,
+    achievements, and gamification progression. It represents the completion
+    of the full narrative arc, not just individual chapters.
+    """
+
+    def __init__(
+        self,
+        user_id: int,
+        story_id: str,
+        story_title: str,
+        story_category: str,
+        total_completion_time_seconds: int,
+        total_chapters_completed: int,
+        total_decisions_made: int,
+        ending_achieved: str,
+        difficulty_level: Optional[str] = None,
+        overall_rating: Optional[int] = None,  # 1-5 stars
+        completion_percentage: float = 100.0,
+        character_relationships: Dict[str, float] = None,
+        achievements_unlocked: List[str] = None,
+        source_service: str = "narrative",
+        correlation_id: Optional[str] = None,
+        **kwargs,
+    ):
+        """
+        Initialize StoryCompletionEvent.
+
+        Args:
+            user_id: ID of the user completing the story
+            story_id: ID of the completed story
+            story_title: Title of the completed story
+            story_category: Category of the story
+            total_completion_time_seconds: Total time spent completing the story
+            total_chapters_completed: Number of chapters completed
+            total_decisions_made: Total number of decisions made throughout
+            ending_achieved: The ending/outcome the user achieved
+            difficulty_level: Difficulty level of the story
+            overall_rating: User's overall rating of the story (1-5 stars)
+            completion_percentage: Percentage of story content experienced
+            character_relationships: Final relationship levels with characters
+            achievements_unlocked: Achievements unlocked during this story
+            source_service: Service processing the completion
+            correlation_id: ID for tracing related events
+            **kwargs: Additional arguments
+        """
+        payload = {
+            "story_id": story_id,
+            "story_title": story_title,
+            "story_category": story_category,
+            "total_completion_time_seconds": total_completion_time_seconds,
+            "total_chapters_completed": total_chapters_completed,
+            "total_decisions_made": total_decisions_made,
+            "ending_achieved": ending_achieved,
+            "difficulty_level": difficulty_level,
+            "overall_rating": overall_rating,
+            "completion_percentage": completion_percentage,
+            "character_relationships": character_relationships or {},
+            "achievements_unlocked": achievements_unlocked or [],
+            "completed_at": datetime.utcnow().isoformat(),
+            # These will be set by the narrative/gamification services
+            "rewards_earned": None,
+            "points_awarded": None,
+            "user_stories_completed_count": None,
+            "is_first_completion": None,
+            "reading_speed_wpm": None,
+        }
+
+        super().__init__(
+            user_id=user_id,
+            source_service=source_service,
+            correlation_id=correlation_id,
+            priority=EventPriority.CRITICAL,  # Story completion is a major milestone
+            payload=payload,
+            **kwargs,
+        )
+
+    @property
+    def story_id(self) -> str:
+        """ID of the completed story."""
+        return self.payload["story_id"]
+
+    @property
+    def story_title(self) -> str:
+        """Title of the completed story."""
+        return self.payload["story_title"]
+
+    @property
+    def story_category(self) -> str:
+        """Category of the story."""
+        return self.payload["story_category"]
+
+    @property
+    def total_completion_time_seconds(self) -> int:
+        """Total time spent completing the story."""
+        return self.payload["total_completion_time_seconds"]
+
+    @property
+    def total_chapters_completed(self) -> int:
+        """Number of chapters completed."""
+        return self.payload["total_chapters_completed"]
+
+    @property
+    def total_decisions_made(self) -> int:
+        """Total decisions made throughout the story."""
+        return self.payload["total_decisions_made"]
+
+    @property
+    def ending_achieved(self) -> str:
+        """The ending/outcome achieved."""
+        return self.payload["ending_achieved"]
+
+    @property
+    def overall_rating(self) -> Optional[int]:
+        """User's overall rating of the story."""
+        return self.payload.get("overall_rating")
+
+    @property
+    def completion_percentage(self) -> float:
+        """Percentage of story content experienced."""
+        return self.payload["completion_percentage"]
+
+    @property
+    def character_relationships(self) -> Dict[str, float]:
+        """Final relationship levels with characters."""
+        return self.payload["character_relationships"]
+
+    @property
+    def achievements_unlocked(self) -> List[str]:
+        """Achievements unlocked during this story."""
+        return self.payload["achievements_unlocked"]
+
+    def _get_event_category(self) -> EventCategory:
+        """Story completion events belong to the NARRATIVE category."""
+        return EventCategory.NARRATIVE
+
+    def _custom_validation(self, errors: List[str]) -> None:
+        """Validate story completion specific requirements."""
+        super()._custom_validation(errors)
+
+        required_string_fields = [
+            "story_id",
+            "story_title",
+            "story_category",
+            "ending_achieved",
+        ]
+        for field in required_string_fields:
+            value = getattr(self, field)
+            if not value or not isinstance(value, str):
+                errors.append(
+                    f"{field.replace('_', ' ').title()} must be a non-empty string"
+                )
+
+        if (
+            not isinstance(self.total_completion_time_seconds, int)
+            or self.total_completion_time_seconds < 0
+        ):
+            errors.append("Total completion time must be a non-negative integer")
+
+        if (
+            not isinstance(self.total_chapters_completed, int)
+            or self.total_chapters_completed <= 0
+        ):
+            errors.append("Total chapters completed must be a positive integer")
+
+        if (
+            not isinstance(self.total_decisions_made, int)
+            or self.total_decisions_made < 0
+        ):
+            errors.append("Total decisions made must be a non-negative integer")
+
+        if not isinstance(self.completion_percentage, (int, float)) or not (
+            0 <= self.completion_percentage <= 100
+        ):
+            errors.append("Completion percentage must be between 0 and 100")
+
+        if self.overall_rating is not None and (
+            not isinstance(self.overall_rating, int)
+            or not (1 <= self.overall_rating <= 5)
+        ):
+            errors.append("Overall rating must be an integer between 1 and 5")
+
+
 # Export all narrative events
 __all__ = [
     "StoryProgressEvent",
@@ -727,4 +913,5 @@ __all__ = [
     "NarrativeStateChangedEvent",
     "CharacterInteractionEvent",
     "StoryStartedEvent",
+    "StoryCompletionEvent",
 ]

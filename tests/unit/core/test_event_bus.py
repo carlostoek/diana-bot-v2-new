@@ -29,10 +29,10 @@ try:
 except ImportError:
     # Use new event system base
     from src.core import BaseEventWithValidation as BaseEvent
+    from src.core import EventType
 
     BaseEvent = BaseEvent
     EventFactory = None
-    EventType = None
 from src.core.interfaces import (
     EventBusConfig,
     EventHandlingError,

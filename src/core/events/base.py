@@ -117,9 +117,11 @@ class BaseEventWithValidation(IEvent, ABC):
             metadata: Additional metadata for tracking
             validation_level: How strict validation should be
         """
-        self._event_id = event_id or str(uuid.uuid4())
-        self._event_type = event_type or self._get_event_type()
-        self._timestamp = timestamp or datetime.utcnow()
+        self._event_id = event_id if event_id is not None else str(uuid.uuid4())
+        self._event_type = (
+            event_type if event_type is not None else self._get_event_type()
+        )
+        self._timestamp = timestamp if timestamp is not None else datetime.utcnow()
         self._source_service = source_service
         self._user_id = user_id
         self._correlation_id = correlation_id

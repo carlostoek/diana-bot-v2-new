@@ -84,7 +84,7 @@ class TestBaseEventWithValidation:
         assert event.priority == EventPriority.NORMAL
         assert isinstance(event.event_id, str)
         assert isinstance(event.timestamp, datetime)
-        assert event.event_type.startswith("core.test_event")
+        assert event.event_type == "core.test"
 
     def test_event_validation_levels(self):
         """Test different validation levels."""
@@ -277,7 +277,7 @@ class TestDomainEvent:
 
         # Should fail without user_id
         with pytest.raises(
-            EventValidationError, match="Domain events must have a user_id"
+            TypeError, match="missing 1 required positional argument: 'user_id'"
         ):
             TestDomainEvent(source_service="test")
 

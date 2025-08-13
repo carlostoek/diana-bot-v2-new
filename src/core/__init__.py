@@ -43,36 +43,15 @@ from .events.narrative import (
 )
 
 
-# Import legacy event structure for backward compatibility (delay import to avoid cycles)
+# Import EventType from events package for backward compatibility
 def _get_legacy_events():
-    """Lazy import legacy events to avoid circular imports."""
+    """Import EventType from events package for backward compatibility."""
     try:
-        from .events import AchievementUnlockedEvent as LegacyAchievementUnlockedEvent
-        from .events import AdminActionPerformedEvent as LegacyAdminActionPerformedEvent
-        from .events import BaseEvent, ErrorOccurredEvent, EventFactory, EventType
-        from .events import (
-            PointsAwardedEvent as LegacyPointsAwardedEvent,  # Legacy event classes
-        )
-        from .events import ServiceStartedEvent as LegacyServiceStartedEvent
-        from .events import StoryChapterStartedEvent, StoryDecisionMadeEvent
-        from .events import StreakUpdatedEvent as LegacyStreakUpdatedEvent
-        from .events import UserRegisteredEvent as LegacyUserRegisteredEvent
-        from .events import UserSubscriptionChangedEvent
+        # Import EventType from the events package
+        from .events import EventType
 
         return {
-            "BaseEvent": BaseEvent,
             "EventType": EventType,
-            "EventFactory": EventFactory,
-            "LegacyPointsAwardedEvent": LegacyPointsAwardedEvent,
-            "LegacyAchievementUnlockedEvent": LegacyAchievementUnlockedEvent,
-            "LegacyStreakUpdatedEvent": LegacyStreakUpdatedEvent,
-            "StoryChapterStartedEvent": StoryChapterStartedEvent,
-            "StoryDecisionMadeEvent": StoryDecisionMadeEvent,
-            "LegacyUserRegisteredEvent": LegacyUserRegisteredEvent,
-            "UserSubscriptionChangedEvent": UserSubscriptionChangedEvent,
-            "LegacyAdminActionPerformedEvent": LegacyAdminActionPerformedEvent,
-            "LegacyServiceStartedEvent": LegacyServiceStartedEvent,
-            "ErrorOccurredEvent": ErrorOccurredEvent,
         }
     except ImportError:
         return {}

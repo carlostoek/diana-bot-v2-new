@@ -24,6 +24,25 @@ Diana Bot V2 is a sophisticated Telegram bot that combines entertainment, gamifi
 - **Monetization Service**: VIP subscriptions, payment processing, revenue tracking
 - **Event Bus**: Redis pub/sub for inter-service communication
 
+### Event System Architecture
+The project uses a Clean Architecture-compliant event system located in `src/core/events/`:
+
+- **Domain Events**: `src/core/events/gamification.py`, `src/core/events/narrative.py`, `src/core/events/admin.py`
+- **System Events**: `src/core/events/core.py`
+- **Base Contracts**: `src/core/events/base.py` (BaseEventWithValidation, DomainEvent, SystemEvent)
+- **Event Catalog**: `src/core/events/catalog.py` (service routing and dependency mapping)
+- **Legacy Compatibility**: EventType constants available via `from src.core import EventType`
+
+**Import Patterns:**
+```python
+# Preferred - domain-specific imports
+from src.core.events.gamification import PointsAwardedEvent
+from src.core.events.narrative import StoryProgressEvent
+
+# Legacy compatibility
+from src.core import EventType  # Constants for backward compatibility
+```
+
 ## Development Commands
 
 Active development commands:
