@@ -2,7 +2,7 @@
 
 import pytest
 
-from diana_bot.core.utils import (
+from core.utils import (
     calculate_besitos,
     format_leaderboard,
     validate_username,

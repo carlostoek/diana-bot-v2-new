@@ -15,9 +15,10 @@ from typing import Any, Dict, List, Optional
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
+import pytest_asyncio
 
-from diana_bot.core.events import EventBus, IEvent
-from diana_bot.core.exceptions import EventBusError, PublishError, SubscribeError
+from core.events import EventBus, IEvent
+from core.exceptions import EventBusError, PublishError, SubscribeError
 
 
 class TestEventBusImplementation:
@@ -34,7 +35,7 @@ class TestEventBusImplementation:
     """
 
     @pytest.fixture
-    async def redis_mock(self):
+    def redis_mock(self):
         """Mock Redis client for testing."""
         redis_mock = AsyncMock()
         redis_mock.ping.return_value = True
@@ -44,10 +45,10 @@ class TestEventBusImplementation:
         redis_mock.close.return_value = None
         return redis_mock
 
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def event_bus(self, redis_mock):
         """Create EventBus instance with mocked Redis."""
-        with patch("diana_bot.core.events.redis.Redis", return_value=redis_mock):
+        with patch("core.event_bus.redis.from_url", return_value=redis_mock):
             bus = EventBus(redis_url="redis://localhost:6379/0")
             await bus.initialize()
             yield bus
@@ -64,7 +65,7 @@ class TestEventBusImplementation:
     @pytest.mark.asyncio
     async def test_event_bus_initialization(self, redis_mock):
         """Test EventBus initializes correctly with Redis connection."""
-        with patch("diana_bot.core.events.redis.Redis", return_value=redis_mock):
+        with patch("core.event_bus.redis.from_url", return_value=redis_mock):
             bus = EventBus(redis_url="redis://localhost:6379/0")
             await bus.initialize()
 
@@ -79,7 +80,7 @@ class TestEventBusImplementation:
         failing_redis = AsyncMock()
         failing_redis.ping.side_effect = ConnectionError("Redis unavailable")
 
-        with patch("diana_bot.core.events.redis.Redis", return_value=failing_redis):
+        with patch("core.event_bus.redis.from_url", return_value=failing_redis):
             bus = EventBus(redis_url="redis://localhost:6379/0")
 
             with pytest.raises(EventBusError):
@@ -120,10 +121,10 @@ class TestEventBusImplementation:
         self, event_bus, sample_event
     ):
         """Test publish handles serialization failures."""
-        # Create event with non-serializable data
-        bad_event = IEvent(
-            type="test.event", data={"function": lambda x: x}  # Non-serializable
-        )
+        # Create valid event first
+        bad_event = IEvent(type="test.event", data={"test": True})
+        # Modify data after creation to make it non-serializable
+        bad_event._data["function"] = lambda x: x  # Non-serializable
 
         with pytest.raises(PublishError):
             await event_bus.publish(bad_event)
@@ -262,7 +263,7 @@ class TestEventBusImplementation:
     @pytest.mark.asyncio
     async def test_event_bus_connection_recovery(self, redis_mock):
         """Test EventBus recovers from Redis connection losses."""
-        with patch("diana_bot.core.events.redis.Redis", return_value=redis_mock):
+        with patch("core.event_bus.redis.from_url", return_value=redis_mock):
             bus = EventBus(redis_url="redis://localhost:6379/0", reconnect_retries=3)
 
             # Initial connection succeeds
@@ -598,7 +599,7 @@ class TestEventBusIntegrationReadiness:
         ]
 
         for url in test_urls:
-            with patch("diana_bot.core.events.redis.Redis") as mock_redis:
+            with patch("core.event_bus.redis.from_url") as mock_redis:
                 mock_client = AsyncMock()
                 mock_client.ping.return_value = True
                 mock_redis.return_value = mock_client
@@ -620,7 +621,7 @@ class TestEventBusIntegrationReadiness:
             {"host": "redis-node-3", "port": 6379},
         ]
 
-        with patch("diana_bot.core.events.redis.RedisCluster") as mock_cluster:
+        with patch("core.event_bus.redis.RedisCluster") as mock_cluster:
             mock_client = AsyncMock()
             mock_client.ping.return_value = True
             mock_cluster.return_value = mock_client
@@ -642,7 +643,7 @@ class TestEventBusIntegrationReadiness:
             "password": "redis-password",
         }
 
-        with patch("diana_bot.core.events.redis.Sentinel") as mock_sentinel:
+        with patch("core.event_bus.redis.Sentinel") as mock_sentinel:
             mock_client = AsyncMock()
             mock_client.ping.return_value = True
             mock_sentinel.return_value.master_for.return_value = mock_client
@@ -661,7 +662,7 @@ class TestEventBusIntegrationReadiness:
         large_data = {"large_field": "x" * 10000}  # 10KB of data
         large_event = IEvent(type="large.event", data=large_data)
 
-        with patch("diana_bot.core.events.redis.Redis") as mock_redis:
+        with patch("core.event_bus.redis.from_url") as mock_redis:
             mock_client = AsyncMock()
             mock_client.ping.return_value = True
             mock_redis.return_value = mock_client
@@ -692,7 +693,7 @@ class TestEventBusIntegrationReadiness:
             data={"user_id": 123, "amount": 99.99, "card_last_four": "1234"},
         )
 
-        with patch("diana_bot.core.events.redis.Redis") as mock_redis:
+        with patch("core.event_bus.redis.from_url") as mock_redis:
             mock_client = AsyncMock()
             mock_client.ping.return_value = True
             mock_redis.return_value = mock_client

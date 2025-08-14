@@ -15,7 +15,7 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 
-from diana_bot.core.events import EventBus, IEvent, IEventBus
+from core.events import EventBus, IEvent, IEventBus
 
 
 class TestIEventInterface:
@@ -309,7 +309,7 @@ class TestIEventBusInterface:
     @pytest.fixture
     def event_bus(self):
         """Create IEventBus instance for testing."""
-        return EventBus()
+        return EventBus(test_mode=True)
 
     @pytest.fixture
     def sample_event(self):

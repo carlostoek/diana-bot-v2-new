@@ -13,7 +13,7 @@ from typing import Any, Dict, List, Optional
 
 import pytest
 
-from diana_bot.core.events import (
+from core.events import (
     AdminEvent,
     EventValidationError,
     GameEvent,

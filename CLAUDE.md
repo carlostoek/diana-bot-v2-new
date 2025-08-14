@@ -1,10 +1,12 @@
-# CLAUDE.md
+# DIANA BOT V2 - TELEGRAM BOT PROJECT
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## PROJECT OVERVIEW
+**Project Type:** Event-driven Telegram Bot  
+**Architecture:** Clean Architecture + Microservices  
+**Status:** Foundation Phase - Starting from scratch  
+**Methodology:** Micro-module development with TDD
 
-## Project Overview
-
-Diana Bot V2 is a sophisticated Telegram bot that combines entertainment, gamification, and AI-driven personalization. The project is currently in the planning phase with comprehensive documentation but no implementation yet.
+Diana Bot V2 is a sophisticated Telegram bot that combines entertainment, gamification, and AI-driven personalization. The project is currently in the foundation phase with comprehensive configuration and ready for implementation.
 
 ## Current Project Structure
 
@@ -14,14 +16,67 @@ This is a **greenfield project** with:
 - Basic Python development setup with `requirements.txt`
 - No source code implementation yet
 
-## Technology Stack (Planned)
+## TECHNOLOGY STACK
+- **Language:** Python 3.11+
+- **Framework:** aiogram 3.x, FastAPI
+- **Database:** PostgreSQL + Redis  
+- **Architecture:** Event-driven with Event Bus backbone
+- **Testing:** pytest, testcontainers, >90% coverage requirement
+- **Quality:** black, pylint, mypy, strict type checking
 
-- **Backend**: Python 3.11+ with aiogram 3.x, FastAPI, SQLAlchemy
-- **Database**: PostgreSQL (primary), Redis (cache/sessions)  
-- **Infrastructure**: Docker, Kubernetes, AWS/GCP
-- **Testing**: pytest with testcontainers for integration tests
-- **CI/CD**: GitHub Actions
-- **Monitoring**: Prometheus, Grafana, Sentry
+## CRITICAL DEVELOPMENT RULES
+
+### 🚨 ABSOLUTE REQUIREMENTS
+1. **TDD MANDATORY** - Tests FIRST, implementation second
+2. **Micro-module approach** - One function at a time, validate immediately
+3. **Event-driven ONLY** - All communication via Event Bus
+4. **Type safety STRICT** - Complete type hints, mypy compliance
+5. **Quality gates** - >90% coverage, pylint >8.0, no mypy errors
+
+### 🎯 MICRO-MODULE WORKFLOW
+```
+1. Analyze requirement → 2. Write tests → 3. Implement minimal code → 4. Validate tests pass → 5. Code quality check → 6. STOP - Await approval
+```
+
+## CURRENT PHASE: EVENT BUS FOUNDATION
+- Building Event Bus from scratch using Redis pub/sub
+- Clean Architecture patterns with strict interface separation
+- Domain-driven events with proper serialization
+
+## ARCHITECTURAL PATTERNS
+- **Repository Pattern** with interfaces
+- **Dependency Injection** throughout
+- **CQRS** for read/write separation
+- **Domain Events** for cross-module communication
+
+## CODE STYLE REQUIREMENTS
+- Functions: snake_case
+- Classes: PascalCase  
+- Constants: UPPER_SNAKE_CASE
+- Async functions for all I/O operations
+- Comprehensive docstrings with type information
+- Error handling with custom exceptions
+
+## TESTING STANDARDS
+- Factory pattern for test objects
+- pytest fixtures for common setups
+- Mock external dependencies
+- Integration tests with testcontainers
+- Performance benchmarks for critical paths
+
+## QUALITY GATES BEFORE ANY COMMIT
+```bash
+pytest tests/ --cov=src --cov-fail-under=90
+black src/ tests/ --check
+pylint src/ --fail-under=8.0
+mypy src/ --strict
+```
+
+## COMMUNICATION STYLE
+- Clear, concise technical communication
+- Step-by-step explanations for complex topics
+- Code examples with proper context
+- Proactive error prevention and explanation
 
 ## Development Commands
 
@@ -119,3 +174,4 @@ flake8>=6.0.0
 - Implement TDD approach with >90% coverage requirement
 - Use the detailed technical architecture doc as the implementation blueprint
 - Leer, comprender y basarse en el documento de development.md para el desarrollo.
+- Al término de cada fase, realiza un commit según lo estipulado en el documento de desarrollo con un mensaje explicativo. Evite el uso de referencias a Claude Code al final del commit. Esto ya lo hace Git. Evitemos redundancias.

@@ -1,5 +1,7 @@
 # Diana Bot V2 Requirements
-# Core dependencies will be added during implementation
+
+# Core dependencies
+redis[hiredis]>=5.0.0
 
 # Development dependencies
 pytest>=7.0.0
