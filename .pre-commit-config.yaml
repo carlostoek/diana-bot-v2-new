@@ -1,0 +1,98 @@
+# Pre-commit hooks configuration for Diana Bot V2
+# See https://pre-commit.com for more information
+repos:
+  # Smart TDD-aware quality gates (run first)
+  - repo: local
+    hooks:
+      - id: smart-pre-commit
+        name: TDD-aware quality gates
+        entry: ./scripts/smart-pre-commit.sh
+        language: script
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
+  # General hooks (run only for maintenance)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'
+        stages: [manual]
+      - id: end-of-file-fixer
+        stages: [manual]
+      - id: check-yaml
+        stages: [manual]
+      - id: check-toml
+        stages: [manual]
+      - id: check-json
+        stages: [manual]
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+        stages: [manual]
+      - id: check-case-conflict
+        stages: [manual]
+      - id: check-merge-conflict
+        stages: [manual]
+      - id: debug-statements
+        stages: [manual]
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+        stages: [manual]
+
+  # Python code formatting with Black (handled by smart-pre-commit.sh)
+  # - repo: https://github.com/psf/black
+  #   rev: 25.1.0
+  #   hooks:
+  #     - id: black
+  #       language_version: python3
+  #       args: ['--line-length=88']
+
+  # Import sorting with isort (handled by smart-pre-commit.sh)
+  # - repo: https://github.com/pycqa/isort
+  #   rev: 5.13.2
+  #   hooks:
+  #     - id: isort
+  #       args: ["--profile", "black", "--line-length", "88"]
+
+  # Flake8 linting (handled by smart-pre-commit.sh)
+  # - repo: https://github.com/pycqa/flake8
+  #   rev: 7.3.0
+  #   hooks:
+  #     - id: flake8
+  #       additional_dependencies: [flake8-docstrings]
+
+  # MyPy type checking (handled by smart-pre-commit.sh)
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.17.1
+  #   hooks:
+  #     - id: mypy
+  #       args: [--config-file=pyproject.toml]
+  #       pass_filenames: false
+  #       always_run: true
+
+  # Pylint code quality (handled by smart-pre-commit.sh)
+  # - repo: local
+  #   hooks:
+  #     - id: pylint
+  #       name: pylint
+  #       entry: pylint
+  #       language: python
+  #       types: [python]
+  #       args: [--rcfile=.pylintrc, --score=no]
+  #       additional_dependencies: [pylint]
+
+  # Security checks with bandit
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.8.0
+    hooks:
+      - id: bandit
+        args: ['-c', '.bandit.yml']
+        files: ^src/
+
+
+# Default stages for all hooks
+default_stages: [pre-commit]
+
+# Fail fast - stop on first failure
+fail_fast: true

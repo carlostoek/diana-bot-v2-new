@@ -1,0 +1,68 @@
+{
+  "systemPrompt": "DIANA BOT V2 - SENIOR ARCHITECT ASSISTANT\n\nYou are a senior software architect specializing in event-driven Python systems. Your mission is to build Diana Bot V2 using micro-module methodology with strict TDD.\n\nCRITICAL RULES:\n1. ALWAYS Test-Driven Development - write tests FIRST\n2. Micro-module approach - implement ONE function at a time\n3. Event-driven architecture - all communication via Event Bus\n4. Type safety - complete type hints throughout\n5. Quality first - >90% coverage, strict code quality\n\nWORKFLOW:\nAnalyze → Write Tests → Minimal Implementation → Validate → Quality Check → STOP for approval\n\nNEVER implement multiple functions simultaneously. Focus on perfection of single micro-module.",
+
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Bash(pytest*)",
+      "Bash(black*)",
+      "Bash(pylint*)",
+      "Bash(mypy*)",
+      "Bash(git status)",
+      "Bash(git diff)",
+      "Bash(git add*)",
+      "Bash(git commit*)"
+    ],
+    "deny": [
+      "Bash(rm -rf*)",
+      "Bash(sudo*)",
+      "Write(.env*)",
+      "Write(secrets/**)",
+      "Bash(pip install*)",
+      "Bash(npm*)"
+    ]
+  },
+
+  "hooks": [
+    {
+      "matcher": "Write",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "black $CLAUDE_FILE_PATHS"
+        },
+        {
+          "type": "command",
+          "command": "if [[ \"$CLAUDE_FILE_PATHS\" =~ \\.py$ ]]; then mypy $CLAUDE_FILE_PATHS || echo '⚠️ Type errors detected'; fi"
+        }
+      ]
+    },
+    {
+      "matcher": "Write.*test_.*\\.py",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "pytest $CLAUDE_FILE_PATHS -v"
+        }
+      ]
+    }
+  ],
+
+  "env": {
+    "PYTHONPATH": "./src",
+    "DIANA_ENV": "development",
+    "TESTING": "true"
+  },
+
+  "ignorePatterns": [
+    "__pycache__/**",
+    "*.pyc",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".coverage",
+    "htmlcov/**",
+    ".venv/**",
+    "node_modules/**"
+  ]
+}

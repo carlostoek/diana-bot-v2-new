@@ -1,0 +1,21 @@
+# Bandit security linting configuration
+exclude_dirs:
+  - tests
+  - venv
+  - .venv
+  - htmlcov
+  - build
+  - dist
+
+# Skip certain test IDs (adjust based on your needs)
+skips:
+  # B101: Test for use of assert
+  - B101
+  # B601: paramiko calls with shell=True
+  - B601
+
+# Test confidence levels: LOW, MEDIUM, HIGH
+confidence: MEDIUM
+
+# Test severity levels: LOW, MEDIUM, HIGH
+severity: MEDIUM
