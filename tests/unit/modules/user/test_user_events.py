@@ -8,11 +8,12 @@ and event-driven architecture patterns.
 TDD Phase: RED - Tests written first, implementation comes later.
 """
 
-import pytest
 import json
 from datetime import datetime, timezone
+from typing import Any, Dict, List
 from unittest.mock import AsyncMock, Mock, call
-from typing import Dict, Any, List
+
+import pytest
 
 # Import core interfaces
 from src.core.interfaces import IEvent, IEventBus
@@ -36,7 +37,7 @@ from src.core.interfaces import IEvent, IEventBus
 
 class TestUserCreatedEvent:
     """Test cases for UserCreatedEvent domain event."""
-    
+
     def test_user_created_event_creation(self):
         """Test UserCreatedEvent creation with required fields."""
         # Arrange
@@ -45,7 +46,7 @@ class TestUserCreatedEvent:
         first_name = "Diana"
         language_code = "es"
         created_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = UserCreatedEvent(
@@ -55,7 +56,7 @@ class TestUserCreatedEvent:
             #     language_code=language_code,
             #     created_at=created_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.username == username
             # assert event.first_name == first_name
@@ -66,7 +67,7 @@ class TestUserCreatedEvent:
             # assert event.event_type == "user.created"
             # assert event.aggregate_id == str(user_id)
             pass
-    
+
     def test_user_created_event_serialization(self):
         """Test UserCreatedEvent JSON serialization."""
         with pytest.raises(ImportError):
@@ -78,10 +79,10 @@ class TestUserCreatedEvent:
             #     language_code="es",
             #     created_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Act
             # serialized = event.to_dict()
-            # 
+            #
             # # Assert
             # assert "user_id" in serialized
             # assert "username" in serialized
@@ -94,7 +95,7 @@ class TestUserCreatedEvent:
             # assert serialized["event_type"] == "user.created"
             # assert serialized["user_id"] == 12345678
             pass
-    
+
     def test_user_created_event_deserialization(self):
         """Test UserCreatedEvent JSON deserialization."""
         with pytest.raises(ImportError):
@@ -110,10 +111,10 @@ class TestUserCreatedEvent:
             #     "language_code": "es",
             #     "created_at": "2025-08-15T10:00:00Z"
             # }
-            # 
+            #
             # # Act
             # event = UserCreatedEvent.from_dict(event_data)
-            # 
+            #
             # # Assert
             # assert event.user_id == 12345678
             # assert event.username == "diana_bot"
@@ -126,17 +127,17 @@ class TestUserCreatedEvent:
 
 class TestUserUpdatedEvent:
     """Test cases for UserUpdatedEvent domain event."""
-    
+
     def test_user_updated_event_creation_with_changes(self):
         """Test UserUpdatedEvent creation with field changes."""
         # Arrange
         user_id = 12345678
         changes = {
             "username": {"old": "old_username", "new": "new_username"},
-            "language_code": {"old": "en", "new": "es"}
+            "language_code": {"old": "en", "new": "es"},
         }
         updated_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = UserUpdatedEvent(
@@ -144,7 +145,7 @@ class TestUserUpdatedEvent:
             #     changes=changes,
             #     updated_at=updated_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.changes == changes
             # assert event.updated_at == updated_at
@@ -152,7 +153,7 @@ class TestUserUpdatedEvent:
             # assert event.aggregate_id == str(user_id)
             # assert len(event.changes) == 2
             pass
-    
+
     def test_user_updated_event_with_single_change(self):
         """Test UserUpdatedEvent with single field change."""
         with pytest.raises(ImportError):
@@ -161,21 +162,21 @@ class TestUserUpdatedEvent:
             # changes = {
             #     "language_code": {"old": "en", "new": "fr"}
             # }
-            # 
+            #
             # # Act
             # event = UserUpdatedEvent(
             #     user_id=user_id,
             #     changes=changes,
             #     updated_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Assert
             # assert len(event.changes) == 1
             # assert "language_code" in event.changes
             # assert event.changes["language_code"]["old"] == "en"
             # assert event.changes["language_code"]["new"] == "fr"
             pass
-    
+
     def test_user_updated_event_serialization(self):
         """Test UserUpdatedEvent JSON serialization."""
         with pytest.raises(ImportError):
@@ -185,10 +186,10 @@ class TestUserUpdatedEvent:
             #     changes={"username": {"old": "old", "new": "new"}},
             #     updated_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Act
             # serialized = event.to_dict()
-            # 
+            #
             # # Assert
             # assert "user_id" in serialized
             # assert "changes" in serialized
@@ -200,14 +201,14 @@ class TestUserUpdatedEvent:
 
 class TestUserDeletedEvent:
     """Test cases for UserDeletedEvent domain event."""
-    
+
     def test_user_deleted_event_creation(self):
         """Test UserDeletedEvent creation."""
         # Arrange
         user_id = 12345678
         username = "diana_bot"
         deleted_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = UserDeletedEvent(
@@ -215,14 +216,14 @@ class TestUserDeletedEvent:
             #     username=username,
             #     deleted_at=deleted_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.username == username
             # assert event.deleted_at == deleted_at
             # assert event.event_type == "user.deleted"
             # assert event.aggregate_id == str(user_id)
             pass
-    
+
     def test_user_deleted_event_with_reason(self):
         """Test UserDeletedEvent with deletion reason."""
         with pytest.raises(ImportError):
@@ -230,7 +231,7 @@ class TestUserDeletedEvent:
             # user_id = 12345678
             # username = "diana_bot"
             # reason = "User requested account deletion"
-            # 
+            #
             # # Act
             # event = UserDeletedEvent(
             #     user_id=user_id,
@@ -238,7 +239,7 @@ class TestUserDeletedEvent:
             #     deleted_at=datetime.now(timezone.utc),
             #     reason=reason
             # )
-            # 
+            #
             # # Assert
             # assert event.reason == reason
             pass
@@ -246,7 +247,7 @@ class TestUserDeletedEvent:
 
 class TestUserLanguageChangedEvent:
     """Test cases for UserLanguageChangedEvent domain event."""
-    
+
     def test_user_language_changed_event_creation(self):
         """Test UserLanguageChangedEvent creation."""
         # Arrange
@@ -254,7 +255,7 @@ class TestUserLanguageChangedEvent:
         old_language = "en"
         new_language = "es"
         changed_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = UserLanguageChangedEvent(
@@ -263,7 +264,7 @@ class TestUserLanguageChangedEvent:
             #     new_language=new_language,
             #     changed_at=changed_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.old_language == old_language
             # assert event.new_language == new_language
@@ -274,7 +275,7 @@ class TestUserLanguageChangedEvent:
 
 class TestUserLoginEvent:
     """Test cases for UserLoginEvent domain event."""
-    
+
     def test_user_login_event_creation(self):
         """Test UserLoginEvent creation."""
         # Arrange
@@ -282,7 +283,7 @@ class TestUserLoginEvent:
         login_at = datetime.now(timezone.utc)
         ip_address = "192.168.1.1"
         user_agent = "TelegramBot/1.0"
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = UserLoginEvent(
@@ -291,7 +292,7 @@ class TestUserLoginEvent:
             #     ip_address=ip_address,
             #     user_agent=user_agent
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.login_at == login_at
             # assert event.ip_address == ip_address
@@ -302,12 +303,12 @@ class TestUserLoginEvent:
 
 class TestUserEventBusIntegration:
     """Test cases for User events integration with EventBus."""
-    
+
     @pytest.fixture
     def mock_event_bus(self) -> AsyncMock:
         """Create a mock event bus."""
         return AsyncMock()
-    
+
     @pytest.mark.asyncio
     async def test_publish_user_created_event(self, mock_event_bus: AsyncMock):
         """Test publishing UserCreatedEvent through EventBus."""
@@ -321,14 +322,14 @@ class TestUserEventBusIntegration:
             #     language_code="es",
             #     created_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Act
             # await mock_event_bus.publish(event)
-            # 
+            #
             # # Assert
             # mock_event_bus.publish.assert_called_once_with(event)
             pass
-    
+
     @pytest.mark.asyncio
     async def test_publish_user_updated_event(self, mock_event_bus: AsyncMock):
         """Test publishing UserUpdatedEvent through EventBus."""
@@ -339,26 +340,26 @@ class TestUserEventBusIntegration:
             #     changes={"username": {"old": "old", "new": "new"}},
             #     updated_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Act
             # await mock_event_bus.publish(event)
-            # 
+            #
             # # Assert
             # mock_event_bus.publish.assert_called_once_with(event)
             pass
-    
+
     @pytest.mark.asyncio
     async def test_subscribe_to_user_events(self, mock_event_bus: AsyncMock):
         """Test subscribing to user events through EventBus."""
         with pytest.raises(ImportError):
             # # Arrange
             # event_handler = AsyncMock()
-            # 
+            #
             # # Act
             # await mock_event_bus.subscribe("user.created", event_handler)
             # await mock_event_bus.subscribe("user.updated", event_handler)
             # await mock_event_bus.subscribe("user.deleted", event_handler)
-            # 
+            #
             # # Assert
             # assert mock_event_bus.subscribe.call_count == 3
             # mock_event_bus.subscribe.assert_any_call("user.created", event_handler)
@@ -369,22 +370,22 @@ class TestUserEventBusIntegration:
 
 class TestUserEventHandlers:
     """Test cases for User event handlers."""
-    
+
     @pytest.fixture
     def mock_user_service(self) -> AsyncMock:
         """Create a mock user service."""
         return AsyncMock()
-    
+
     @pytest.fixture
     def mock_analytics_service(self) -> AsyncMock:
         """Create a mock analytics service."""
         return AsyncMock()
-    
+
     @pytest.fixture
     def mock_notification_service(self) -> AsyncMock:
         """Create a mock notification service."""
         return AsyncMock()
-    
+
     @pytest.fixture
     def user_event_handler(self, mock_user_service: AsyncMock):
         """Create UserEventHandler with mocked dependencies."""
@@ -392,7 +393,7 @@ class TestUserEventHandlers:
             # return UserEventHandler(user_service=mock_user_service)
             pass
         return None
-    
+
     @pytest.fixture
     def analytics_event_handler(self, mock_analytics_service: AsyncMock):
         """Create UserAnalyticsEventHandler with mocked dependencies."""
@@ -400,88 +401,82 @@ class TestUserEventHandlers:
             # return UserAnalyticsEventHandler(analytics_service=mock_analytics_service)
             pass
         return None
-    
+
     @pytest.mark.asyncio
     async def test_handle_user_created_event(
-        self,
-        user_event_handler,
-        mock_user_service: AsyncMock
+        self, user_event_handler, mock_user_service: AsyncMock
     ):
         """Test handling UserCreatedEvent."""
         if user_event_handler is None:
             pytest.skip("UserEventHandler not implemented yet - RED phase")
-        
+
         # Arrange
         event = UserCreatedEvent(
             user_id=12345678,
             username="diana_bot",
             first_name="Diana",
             language_code="es",
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(timezone.utc),
         )
-        
+
         # Act
         await user_event_handler.handle_user_created(event)
-        
+
         # Assert
         mock_user_service.on_user_created.assert_called_once_with(event)
-    
+
     @pytest.mark.asyncio
     async def test_handle_user_updated_event(
-        self,
-        user_event_handler,
-        mock_user_service: AsyncMock
+        self, user_event_handler, mock_user_service: AsyncMock
     ):
         """Test handling UserUpdatedEvent."""
         if user_event_handler is None:
             pytest.skip("UserEventHandler not implemented yet - RED phase")
-        
+
         # Arrange
         event = UserUpdatedEvent(
             user_id=12345678,
             changes={"username": {"old": "old", "new": "new"}},
-            updated_at=datetime.now(timezone.utc)
+            updated_at=datetime.now(timezone.utc),
         )
-        
+
         # Act
         await user_event_handler.handle_user_updated(event)
-        
+
         # Assert
         mock_user_service.on_user_updated.assert_called_once_with(event)
-    
+
     @pytest.mark.asyncio
     async def test_handle_user_language_changed_event(
-        self,
-        analytics_event_handler,
-        mock_analytics_service: AsyncMock
+        self, analytics_event_handler, mock_analytics_service: AsyncMock
     ):
         """Test handling UserLanguageChangedEvent for analytics."""
         if analytics_event_handler is None:
             pytest.skip("UserAnalyticsEventHandler not implemented yet - RED phase")
-        
+
         # Arrange
         event = UserLanguageChangedEvent(
             user_id=12345678,
             old_language="en",
             new_language="es",
-            changed_at=datetime.now(timezone.utc)
+            changed_at=datetime.now(timezone.utc),
         )
-        
+
         # Act
         await analytics_event_handler.handle_language_changed(event)
-        
+
         # Assert
         mock_analytics_service.track_language_change.assert_called_once_with(
             user_id=12345678,
             old_language="en",
             new_language="es",
-            timestamp=event.changed_at
+            timestamp=event.changed_at,
         )
 
 
 class TestUserEventValidation:
     """Test cases for user event validation and constraints."""
-    
+
     def test_user_created_event_validation_missing_user_id(self):
         """Test UserCreatedEvent validation fails with missing user_id."""
         with pytest.raises(ImportError):
@@ -494,7 +489,7 @@ class TestUserEventValidation:
             #         created_at=datetime.now(timezone.utc)
             #     )
             pass
-    
+
     def test_user_created_event_validation_invalid_user_id(self):
         """Test UserCreatedEvent validation fails with invalid user_id."""
         with pytest.raises(ImportError):
@@ -507,7 +502,7 @@ class TestUserEventValidation:
             #         created_at=datetime.now(timezone.utc)
             #     )
             pass
-    
+
     def test_user_created_event_validation_empty_first_name(self):
         """Test UserCreatedEvent validation fails with empty first_name."""
         with pytest.raises(ImportError):
@@ -520,7 +515,7 @@ class TestUserEventValidation:
             #         created_at=datetime.now(timezone.utc)
             #     )
             pass
-    
+
     def test_user_updated_event_validation_empty_changes(self):
         """Test UserUpdatedEvent validation fails with empty changes."""
         with pytest.raises(ImportError):
@@ -532,7 +527,7 @@ class TestUserEventValidation:
             #         updated_at=datetime.now(timezone.utc)
             #     )
             pass
-    
+
     def test_user_language_changed_event_validation_same_language(self):
         """Test UserLanguageChangedEvent validation fails with same language."""
         with pytest.raises(ImportError):
@@ -549,7 +544,7 @@ class TestUserEventValidation:
 
 class TestUserEventSerialization:
     """Test cases for user event serialization/deserialization edge cases."""
-    
+
     def test_user_event_serialization_with_none_values(self):
         """Test event serialization handles None values correctly."""
         with pytest.raises(ImportError):
@@ -561,15 +556,15 @@ class TestUserEventSerialization:
             #     language_code="es",
             #     created_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Act
             # serialized = event.to_dict()
-            # 
+            #
             # # Assert
             # assert serialized["username"] is None
             # assert "username" in serialized  # Key should exist even if value is None
             pass
-    
+
     def test_user_event_deserialization_with_extra_fields(self):
         """Test event deserialization ignores extra fields."""
         with pytest.raises(ImportError):
@@ -585,16 +580,16 @@ class TestUserEventSerialization:
             #     "created_at": "2025-08-15T10:00:00Z",
             #     "extra_field": "should_be_ignored"  # Extra field
             # }
-            # 
+            #
             # # Act
             # event = UserCreatedEvent.from_dict(event_data)
-            # 
+            #
             # # Assert
             # assert event.user_id == 12345678
             # assert event.first_name == "Diana"
             # assert not hasattr(event, "extra_field")
             pass
-    
+
     def test_user_event_json_serialization_roundtrip(self):
         """Test event JSON serialization and deserialization roundtrip."""
         with pytest.raises(ImportError):
@@ -606,12 +601,12 @@ class TestUserEventSerialization:
             #     language_code="es",
             #     created_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Act
             # json_string = json.dumps(original_event.to_dict(), default=str)
             # event_data = json.loads(json_string)
             # reconstructed_event = UserCreatedEvent.from_dict(event_data)
-            # 
+            #
             # # Assert
             # assert reconstructed_event.user_id == original_event.user_id
             # assert reconstructed_event.username == original_event.username
@@ -623,7 +618,7 @@ class TestUserEventSerialization:
 
 class TestOnboardingBusinessEvents:
     """Test cases for onboarding-related business events (US-001, UC-001)."""
-    
+
     def test_onboarding_started_event_creation(self):
         """Test OnboardingStartedEvent creation with required business data."""
         # Arrange
@@ -633,10 +628,10 @@ class TestOnboardingBusinessEvents:
         adaptive_context = {
             "time_of_day": "evening",
             "greeting_style": "warm_professional",
-            "personalization_level": "initial"
+            "personalization_level": "initial",
         }
         started_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = OnboardingStartedEvent(
@@ -646,7 +641,7 @@ class TestOnboardingBusinessEvents:
             #     adaptive_context=adaptive_context,
             #     started_at=started_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.first_name == first_name
             # assert event.language_code == language_code
@@ -655,7 +650,7 @@ class TestOnboardingBusinessEvents:
             # assert event.event_type == "user.onboarding_started"
             # assert event.aggregate_id == str(user_id)
             pass
-    
+
     def test_onboarding_progressed_event_creation(self):
         """Test OnboardingProgressedEvent for state transitions."""
         # Arrange
@@ -667,13 +662,13 @@ class TestOnboardingBusinessEvents:
                 "exploration": 0.8,
                 "competitiveness": 0.6,
                 "narrative": 0.9,
-                "social": 0.4
+                "social": 0.4,
             },
             "archetype": "narrative_explorer",
-            "confidence": 0.85
+            "confidence": 0.85,
         }
         progressed_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = OnboardingProgressedEvent(
@@ -683,7 +678,7 @@ class TestOnboardingBusinessEvents:
             #     progression_data=progression_data,
             #     progressed_at=progressed_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.old_state == old_state
             # assert event.new_state == new_state
@@ -691,7 +686,7 @@ class TestOnboardingBusinessEvents:
             # assert event.progressed_at == progressed_at
             # assert event.event_type == "user.onboarding_progressed"
             pass
-    
+
     def test_tutorial_started_event_creation(self):
         """Test TutorialStartedEvent with business context."""
         # Arrange
@@ -702,10 +697,10 @@ class TestOnboardingBusinessEvents:
         customizations = {
             "tutorial_style": "story_based",
             "pacing": "moderate",
-            "examples": "narrative_focused"
+            "examples": "narrative_focused",
         }
         started_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = TutorialStartedEvent(
@@ -716,7 +711,7 @@ class TestOnboardingBusinessEvents:
             #     customizations=customizations,
             #     started_at=started_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.personality_archetype == personality_archetype
             # assert event.expected_duration == expected_duration
@@ -725,7 +720,7 @@ class TestOnboardingBusinessEvents:
             # assert event.started_at == started_at
             # assert event.event_type == "user.tutorial_started"
             pass
-    
+
     def test_tutorial_section_completed_event_creation(self):
         """Test TutorialSectionCompletedEvent for detailed progress tracking."""
         # Arrange
@@ -735,10 +730,10 @@ class TestOnboardingBusinessEvents:
             "time_spent": 75,
             "interactions": 8,
             "completion_score": 0.92,
-            "engagement_level": "high"
+            "engagement_level": "high",
         }
         completed_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = TutorialSectionCompletedEvent(
@@ -747,7 +742,7 @@ class TestOnboardingBusinessEvents:
             #     section_data=section_data,
             #     completed_at=completed_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.section_name == section_name
             # assert event.section_data == section_data
@@ -758,7 +753,7 @@ class TestOnboardingBusinessEvents:
 
 class TestPersonalityDetectionEvents:
     """Test cases for personality detection business events (US-002)."""
-    
+
     def test_personality_detected_event_creation(self):
         """Test PersonalityDetectedEvent with 4-dimension scoring."""
         # Arrange
@@ -767,7 +762,7 @@ class TestPersonalityDetectionEvents:
             "exploration": 0.8,
             "competitiveness": 0.3,
             "narrative": 0.9,
-            "social": 0.4
+            "social": 0.4,
         }
         archetype = "narrative_explorer"
         confidence = 0.85
@@ -775,10 +770,10 @@ class TestPersonalityDetectionEvents:
             {"question_id": "explore_preference", "answer_id": "free_exploration"},
             {"question_id": "competition_style", "answer_id": "collaborative"},
             {"question_id": "story_engagement", "answer_id": "deep_immersion"},
-            {"question_id": "social_preference", "answer_id": "small_groups"}
+            {"question_id": "social_preference", "answer_id": "small_groups"},
         ]
         detected_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = PersonalityDetectedEvent(
@@ -789,7 +784,7 @@ class TestPersonalityDetectionEvents:
             #     quiz_responses=quiz_responses,
             #     detected_at=detected_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.dimensions == dimensions
             # assert event.archetype == archetype
@@ -797,14 +792,14 @@ class TestPersonalityDetectionEvents:
             # assert event.quiz_responses == quiz_responses
             # assert event.detected_at == detected_at
             # assert event.event_type == "user.personality_detected"
-            # 
+            #
             # # Verify all 4 dimensions are present
             # required_dimensions = ["exploration", "competitiveness", "narrative", "social"]
             # for dimension in required_dimensions:
             #     assert dimension in event.dimensions
             #     assert 0.0 <= event.dimensions[dimension] <= 1.0
             pass
-    
+
     def test_personality_quiz_started_event_creation(self):
         """Test PersonalityQuizStartedEvent for quiz flow tracking."""
         # Arrange
@@ -814,10 +809,10 @@ class TestPersonalityDetectionEvents:
             "randomized_order": True,
             "time_limit_per_question": 30,
             "allow_skip": False,
-            "dimension_focus": "balanced"
+            "dimension_focus": "balanced",
         }
         started_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = PersonalityQuizStartedEvent(
@@ -826,14 +821,14 @@ class TestPersonalityDetectionEvents:
             #     quiz_config=quiz_config,
             #     started_at=started_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.total_questions == total_questions
             # assert event.quiz_config == quiz_config
             # assert event.started_at == started_at
             # assert event.event_type == "user.personality_quiz_started"
             pass
-    
+
     def test_customization_generated_event_creation(self):
         """Test CustomizationGeneratedEvent for personality-based hooks."""
         # Arrange
@@ -844,10 +839,10 @@ class TestPersonalityDetectionEvents:
             "notification_style": "narrative_driven",
             "gamification_focus": "achievement_discovery",
             "social_interaction_level": "minimal",
-            "tutorial_style": "story_based"
+            "tutorial_style": "story_based",
         }
         generated_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = CustomizationGeneratedEvent(
@@ -856,7 +851,7 @@ class TestPersonalityDetectionEvents:
             #     customizations=customizations,
             #     generated_at=generated_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.personality_archetype == personality_archetype
             # assert event.customizations == customizations
@@ -867,7 +862,7 @@ class TestPersonalityDetectionEvents:
 
 class TestDianaMasterSystemEvents:
     """Test cases for Diana Master System integration events."""
-    
+
     def test_adaptive_context_initialized_event_creation(self):
         """Test AdaptiveContextInitializedEvent for context setup."""
         # Arrange
@@ -876,11 +871,11 @@ class TestDianaMasterSystemEvents:
             "personalization_level": "initial",
             "communication_style": "friendly_casual",
             "content_preferences": ["interactive", "gamified"],
-            "notification_timing": "evening_preferred"
+            "notification_timing": "evening_preferred",
         }
         initialization_source = "first_contact"
         initialized_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = AdaptiveContextInitializedEvent(
@@ -889,14 +884,14 @@ class TestDianaMasterSystemEvents:
             #     initialization_source=initialization_source,
             #     initialized_at=initialized_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.context_data == context_data
             # assert event.initialization_source == initialization_source
             # assert event.initialized_at == initialized_at
             # assert event.event_type == "user.adaptive_context_initialized"
             pass
-    
+
     def test_profile_updated_event_creation(self):
         """Test ProfileUpdatedEvent for behavioral learning."""
         # Arrange
@@ -904,20 +899,20 @@ class TestDianaMasterSystemEvents:
         profile_changes = {
             "personality_refinements": {
                 "narrative": {"old": 0.9, "new": 0.92},
-                "competitiveness": {"old": 0.3, "new": 0.25}
+                "competitiveness": {"old": 0.3, "new": 0.25},
             },
             "behavioral_insights": {
                 "preferred_session_time": "evening",
-                "attention_span": "high"
+                "attention_span": "high",
             },
             "engagement_patterns": {
                 "peak_hours": ["19:00-22:00"],
-                "session_length_preference": "medium"
-            }
+                "session_length_preference": "medium",
+            },
         }
         update_source = "interaction_analysis"
         updated_at = datetime.now(timezone.utc)
-        
+
         # Act & Assert
         with pytest.raises(ImportError):
             # event = ProfileUpdatedEvent(
@@ -926,7 +921,7 @@ class TestDianaMasterSystemEvents:
             #     update_source=update_source,
             #     updated_at=updated_at
             # )
-            # 
+            #
             # assert event.user_id == user_id
             # assert event.profile_changes == profile_changes
             # assert event.update_source == update_source
@@ -937,22 +932,19 @@ class TestDianaMasterSystemEvents:
 
 class TestBusinessEventIntegration:
     """Test cases for business event integration and flow validation."""
-    
+
     @pytest.fixture
     def mock_event_bus(self) -> AsyncMock:
         """Create a mock event bus for integration testing."""
         return AsyncMock()
-    
+
     @pytest.mark.asyncio
-    async def test_onboarding_event_flow_integration(
-        self,
-        mock_event_bus: AsyncMock
-    ):
+    async def test_onboarding_event_flow_integration(self, mock_event_bus: AsyncMock):
         """Test complete onboarding event flow: started → progressed → completed."""
         with pytest.raises(ImportError):
             # # Arrange - Create complete onboarding event sequence
             # user_id = 12345678
-            # 
+            #
             # # Event 1: Onboarding Started
             # onboarding_started = OnboardingStartedEvent(
             #     user_id=user_id,
@@ -961,7 +953,7 @@ class TestBusinessEventIntegration:
             #     adaptive_context={"greeting_style": "warm_professional"},
             #     started_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Event 2: Personality Detected (Onboarding Progressed)
             # personality_detected = PersonalityDetectedEvent(
             #     user_id=user_id,
@@ -971,7 +963,7 @@ class TestBusinessEventIntegration:
             #     quiz_responses=[],
             #     detected_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Event 3: Tutorial Started
             # tutorial_started = TutorialStartedEvent(
             #     user_id=user_id,
@@ -981,7 +973,7 @@ class TestBusinessEventIntegration:
             #     customizations={"tutorial_style": "story_based"},
             #     started_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Event 4: Tutorial Completed (Onboarding Completed)
             # tutorial_completed = TutorialCompletedEvent(
             #     user_id=user_id,
@@ -990,39 +982,36 @@ class TestBusinessEventIntegration:
             #     engagement_score=0.92,
             #     completed_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Act - Publish complete event sequence
             # await mock_event_bus.publish(onboarding_started)
             # await mock_event_bus.publish(personality_detected)
             # await mock_event_bus.publish(tutorial_started)
             # await mock_event_bus.publish(tutorial_completed)
-            # 
+            #
             # # Assert - Verify all events were published in correct order
             # assert mock_event_bus.publish.call_count == 4
-            # 
+            #
             # published_events = [call[0][0] for call in mock_event_bus.publish.call_args_list]
             # event_types = [event.event_type for event in published_events]
-            # 
+            #
             # expected_sequence = [
             #     "user.onboarding_started",
             #     "user.personality_detected",
             #     "user.tutorial_started",
             #     "user.tutorial_completed"
             # ]
-            # 
+            #
             # assert event_types == expected_sequence
             pass
-    
+
     @pytest.mark.asyncio
-    async def test_personality_detection_event_chain(
-        self,
-        mock_event_bus: AsyncMock
-    ):
+    async def test_personality_detection_event_chain(self, mock_event_bus: AsyncMock):
         """Test personality detection event chain with all 4 dimensions."""
         with pytest.raises(ImportError):
             # # Arrange - Complete personality detection flow
             # user_id = 12345678
-            # 
+            #
             # # Event 1: Quiz Started
             # quiz_started = PersonalityQuizStartedEvent(
             #     user_id=user_id,
@@ -1030,7 +1019,7 @@ class TestBusinessEventIntegration:
             #     quiz_config={"randomized_order": True},
             #     started_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Event 2: Each question answered (5 events)
             # question_events = []
             # dimensions = ["exploration", "competitiveness", "narrative", "social"]
@@ -1044,18 +1033,18 @@ class TestBusinessEventIntegration:
             #         answered_at=datetime.now(timezone.utc)
             #     )
             #     question_events.append(question_event)
-            # 
+            #
             # # Event 3: Personality Detected (final result)
             # personality_detected = PersonalityDetectedEvent(
             #     user_id=user_id,
             #     dimensions={"exploration": 0.8, "competitiveness": 0.3, "narrative": 0.9, "social": 0.4},
             #     archetype="narrative_explorer",
             #     confidence=0.85,
-            #     quiz_responses=[{"question_id": f"q_{i+1}", "answer_id": f"answer_{dim}"} 
+            #     quiz_responses=[{"question_id": f"q_{i+1}", "answer_id": f"answer_{dim}"}
             #                    for i, dim in enumerate(dimensions)],
             #     detected_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Event 4: Customizations Generated
             # customizations_generated = CustomizationGeneratedEvent(
             #     user_id=user_id,
@@ -1066,18 +1055,18 @@ class TestBusinessEventIntegration:
             #     },
             #     generated_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Act - Publish personality detection event chain
             # await mock_event_bus.publish(quiz_started)
             # for question_event in question_events:
             #     await mock_event_bus.publish(question_event)
             # await mock_event_bus.publish(personality_detected)
             # await mock_event_bus.publish(customizations_generated)
-            # 
+            #
             # # Assert - Verify complete personality detection flow
             # total_events = 1 + len(question_events) + 1 + 1  # quiz_started + questions + detected + customizations
             # assert mock_event_bus.publish.call_count == total_events
-            # 
+            #
             # # Verify final personality event has all 4 dimensions
             # personality_event = None
             # for call in mock_event_bus.publish.call_args_list:
@@ -1085,19 +1074,19 @@ class TestBusinessEventIntegration:
             #     if event.event_type == "user.personality_detected":
             #         personality_event = event
             #         break
-            # 
+            #
             # assert personality_event is not None
             # assert len(personality_event.dimensions) == 4
             # assert all(dim in personality_event.dimensions for dim in dimensions)
             pass
-    
+
     def test_business_event_serialization_completeness(self):
         """Test that all business events can be properly serialized for EventBus."""
         with pytest.raises(ImportError):
             # # Test all major business events for serialization compatibility
             # user_id = 12345678
             # timestamp = datetime.now(timezone.utc)
-            # 
+            #
             # business_events = [
             #     OnboardingStartedEvent(
             #         user_id=user_id,
@@ -1123,7 +1112,7 @@ class TestBusinessEventIntegration:
             #         started_at=timestamp
             #     )
             # ]
-            # 
+            #
             # # Act & Assert - Each event should serialize/deserialize correctly
             # for event in business_events:
             #     # Test serialization
@@ -1132,7 +1121,7 @@ class TestBusinessEventIntegration:
             #     assert "event_type" in serialized
             #     assert "user_id" in serialized
             #     assert "timestamp" in serialized
-            #     
+            #
             #     # Test deserialization
             #     event_class = type(event)
             #     reconstructed = event_class.from_dict(serialized)
@@ -1143,7 +1132,7 @@ class TestBusinessEventIntegration:
 
 class TestBusinessEventCompliance:
     """Test cases ensuring business event compliance with specifications."""
-    
+
     def test_required_business_events_coverage(self):
         """Test that all required business events are properly defined and covered."""
         # Required business events for Diana Bot V2 User Module
@@ -1151,148 +1140,251 @@ class TestBusinessEventCompliance:
             # US-001: Primer Contacto Personalizado
             "user.onboarding_started": {
                 "description": "User begins onboarding process with personalized context",
-                "required_fields": ["user_id", "first_name", "language_code", "adaptive_context", "started_at"],
-                "business_impact": "Triggers Diana Master System context initialization"
+                "required_fields": [
+                    "user_id",
+                    "first_name",
+                    "language_code",
+                    "adaptive_context",
+                    "started_at",
+                ],
+                "business_impact": "Triggers Diana Master System context initialization",
             },
             # US-002: Detección de Personalidad Inicial
             "user.personality_detected": {
-                "description": "User personality detected through 4-dimension analysis", 
-                "required_fields": ["user_id", "dimensions", "archetype", "confidence", "detected_at"],
-                "business_impact": "Enables personalized experience customization"
+                "description": "User personality detected through 4-dimension analysis",
+                "required_fields": [
+                    "user_id",
+                    "dimensions",
+                    "archetype",
+                    "confidence",
+                    "detected_at",
+                ],
+                "business_impact": "Enables personalized experience customization",
             },
             # UC-001: Primer Contacto con Usuario Nuevo
             "user.tutorial_started": {
                 "description": "User tutorial begins with personality-based customization",
-                "required_fields": ["user_id", "personality_archetype", "sections_planned", "started_at"],
-                "business_impact": "Drives onboarding completion and engagement"
+                "required_fields": [
+                    "user_id",
+                    "personality_archetype",
+                    "sections_planned",
+                    "started_at",
+                ],
+                "business_impact": "Drives onboarding completion and engagement",
             },
             "user.tutorial_section_completed": {
                 "description": "Individual tutorial section completed with engagement data",
-                "required_fields": ["user_id", "section_name", "section_data", "completed_at"],
-                "business_impact": "Tracks granular engagement and learning progress"
+                "required_fields": [
+                    "user_id",
+                    "section_name",
+                    "section_data",
+                    "completed_at",
+                ],
+                "business_impact": "Tracks granular engagement and learning progress",
             },
             "user.tutorial_completed": {
                 "description": "Full tutorial completed, user ready for main experience",
-                "required_fields": ["user_id", "sections_completed", "total_time", "engagement_score", "completed_at"],
-                "business_impact": "Completes onboarding, activates full feature access"
+                "required_fields": [
+                    "user_id",
+                    "sections_completed",
+                    "total_time",
+                    "engagement_score",
+                    "completed_at",
+                ],
+                "business_impact": "Completes onboarding, activates full feature access",
             },
             "user.onboarding_completed": {
                 "description": "Complete onboarding process finished",
-                "required_fields": ["user_id", "final_state", "completion_metrics", "completed_at"],
-                "business_impact": "User transitions to active engagement phase"
+                "required_fields": [
+                    "user_id",
+                    "final_state",
+                    "completion_metrics",
+                    "completed_at",
+                ],
+                "business_impact": "User transitions to active engagement phase",
             },
             # Diana Master System Integration
             "user.adaptive_context_initialized": {
                 "description": "Adaptive context established for personalization",
-                "required_fields": ["user_id", "context_data", "initialization_source", "initialized_at"],
-                "business_impact": "Enables AI-driven personalization features"
+                "required_fields": [
+                    "user_id",
+                    "context_data",
+                    "initialization_source",
+                    "initialized_at",
+                ],
+                "business_impact": "Enables AI-driven personalization features",
             },
             "user.profile_updated": {
-                "description": "User profile refined based on behavioral analysis", 
-                "required_fields": ["user_id", "profile_changes", "update_source", "updated_at"],
-                "business_impact": "Improves personalization accuracy over time"
+                "description": "User profile refined based on behavioral analysis",
+                "required_fields": [
+                    "user_id",
+                    "profile_changes",
+                    "update_source",
+                    "updated_at",
+                ],
+                "business_impact": "Improves personalization accuracy over time",
             },
             "user.customization_generated": {
                 "description": "Personality-based customizations created",
-                "required_fields": ["user_id", "personality_archetype", "customizations", "generated_at"],
-                "business_impact": "Applies personalized experience settings"
-            }
+                "required_fields": [
+                    "user_id",
+                    "personality_archetype",
+                    "customizations",
+                    "generated_at",
+                ],
+                "business_impact": "Applies personalized experience settings",
+            },
         }
-        
+
         # Assert all required events are documented and tested
         for event_type, event_info in required_events.items():
             # Each event should have proper definition
-            assert "description" in event_info, f"Event {event_type} missing description"
-            assert "required_fields" in event_info, f"Event {event_type} missing required fields"
-            assert "business_impact" in event_info, f"Event {event_type} missing business impact"
-            
+            assert (
+                "description" in event_info
+            ), f"Event {event_type} missing description"
+            assert (
+                "required_fields" in event_info
+            ), f"Event {event_type} missing required fields"
+            assert (
+                "business_impact" in event_info
+            ), f"Event {event_type} missing business impact"
+
             # Each event should have minimum required fields
             required_fields = event_info["required_fields"]
-            assert "user_id" in required_fields, f"Event {event_type} must include user_id"
-            assert any(field.endswith("_at") for field in required_fields), f"Event {event_type} must include timestamp field"
-        
+            assert (
+                "user_id" in required_fields
+            ), f"Event {event_type} must include user_id"
+            assert any(
+                field.endswith("_at") for field in required_fields
+            ), f"Event {event_type} must include timestamp field"
+
         # Verify comprehensive coverage
-        assert len(required_events) >= 9, "Minimum 9 business events required for comprehensive coverage"
-    
+        assert (
+            len(required_events) >= 9
+        ), "Minimum 9 business events required for comprehensive coverage"
+
     def test_personality_dimension_event_compliance(self):
         """Test that personality-related events comply with 4-dimension requirement."""
         required_dimensions = ["exploration", "competitiveness", "narrative", "social"]
-        
+
         # Test data that should be present in personality events
         personality_event_data = {
             "dimensions": {
                 "exploration": 0.8,
-                "competitiveness": 0.3, 
+                "competitiveness": 0.3,
                 "narrative": 0.9,
-                "social": 0.4
+                "social": 0.4,
             }
         }
-        
+
         # Assert all required dimensions are present
         for dimension in required_dimensions:
-            assert dimension in personality_event_data["dimensions"], f"Dimension {dimension} required in personality events"
-            
+            assert (
+                dimension in personality_event_data["dimensions"]
+            ), f"Dimension {dimension} required in personality events"
+
             # Assert dimension values are properly bounded
             score = personality_event_data["dimensions"][dimension]
-            assert 0.0 <= score <= 1.0, f"Dimension {dimension} score must be between 0.0 and 1.0"
-        
+            assert (
+                0.0 <= score <= 1.0
+            ), f"Dimension {dimension} score must be between 0.0 and 1.0"
+
         # Assert exactly 4 dimensions (no more, no less)
-        assert len(personality_event_data["dimensions"]) == 4, "Exactly 4 personality dimensions required"
-    
+        assert (
+            len(personality_event_data["dimensions"]) == 4
+        ), "Exactly 4 personality dimensions required"
+
     def test_onboarding_state_event_compliance(self):
         """Test that onboarding events comply with state machine requirements."""
         # Valid onboarding states and transitions
-        valid_states = ["newcomer", "quiz_started", "personality_detected", "tutorial_started", "tutorial_completed"]
-        
+        valid_states = [
+            "newcomer",
+            "quiz_started",
+            "personality_detected",
+            "tutorial_started",
+            "tutorial_completed",
+        ]
+
         valid_transitions = [
             ("newcomer", "quiz_started"),
             ("quiz_started", "personality_detected"),
             ("personality_detected", "tutorial_started"),
-            ("tutorial_started", "tutorial_completed")
+            ("tutorial_started", "tutorial_completed"),
         ]
-        
+
         # Test that all states are accounted for
         for state in valid_states:
-            assert state in valid_states, f"State {state} must be valid onboarding state"
-        
+            assert (
+                state in valid_states
+            ), f"State {state} must be valid onboarding state"
+
         # Test that all transitions are logical
         for old_state, new_state in valid_transitions:
             assert old_state in valid_states, f"Source state {old_state} must be valid"
             assert new_state in valid_states, f"Target state {new_state} must be valid"
-            assert old_state != new_state, f"State transition must change state: {old_state} -> {new_state}"
-        
+            assert (
+                old_state != new_state
+            ), f"State transition must change state: {old_state} -> {new_state}"
+
         # Assert comprehensive state coverage
         assert len(valid_states) >= 5, "Minimum 5 onboarding states required"
         assert len(valid_transitions) >= 4, "Minimum 4 state transitions required"
-    
+
     def test_business_event_impact_coverage(self):
         """Test that business events properly drive downstream processes."""
         # Map events to their expected downstream impacts
         event_impacts = {
-            "user.onboarding_started": ["diana_master_context_init", "welcome_message_generation"],
-            "user.personality_detected": ["archetype_assignment", "customization_generation", "tutorial_personalization"],
-            "user.tutorial_started": ["progress_tracking_init", "engagement_monitoring", "completion_prediction"],
-            "user.tutorial_completed": ["onboarding_finalization", "feature_unlock", "engagement_analysis"],
-            "user.profile_updated": ["personalization_refinement", "recommendation_update", "behavior_analysis"]
+            "user.onboarding_started": [
+                "diana_master_context_init",
+                "welcome_message_generation",
+            ],
+            "user.personality_detected": [
+                "archetype_assignment",
+                "customization_generation",
+                "tutorial_personalization",
+            ],
+            "user.tutorial_started": [
+                "progress_tracking_init",
+                "engagement_monitoring",
+                "completion_prediction",
+            ],
+            "user.tutorial_completed": [
+                "onboarding_finalization",
+                "feature_unlock",
+                "engagement_analysis",
+            ],
+            "user.profile_updated": [
+                "personalization_refinement",
+                "recommendation_update",
+                "behavior_analysis",
+            ],
         }
-        
+
         # Assert each event drives multiple business processes
         for event_type, impacts in event_impacts.items():
-            assert len(impacts) >= 2, f"Event {event_type} must drive at least 2 downstream processes"
-            
+            assert (
+                len(impacts) >= 2
+            ), f"Event {event_type} must drive at least 2 downstream processes"
+
             # Assert impacts are meaningful business processes
             for impact in impacts:
-                assert len(impact) > 5, f"Impact {impact} should be descriptive business process"
-                assert "_" in impact or " " in impact, f"Impact {impact} should be compound process name"
-        
+                assert (
+                    len(impact) > 5
+                ), f"Impact {impact} should be descriptive business process"
+                assert (
+                    "_" in impact or " " in impact
+                ), f"Impact {impact} should be compound process name"
+
         # Verify comprehensive impact coverage
         total_impacts = sum(len(impacts) for impacts in event_impacts.values())
-        assert total_impacts >= 15, "Minimum 15 downstream processes should be driven by business events"
+        assert (
+            total_impacts >= 15
+        ), "Minimum 15 downstream processes should be driven by business events"
 
 
 class TestUserEventConcurrency:
     """Test cases for user event handling under concurrent scenarios."""
-    
+
     @pytest.mark.asyncio
     async def test_concurrent_user_events_processing(self):
         """Test processing multiple user events concurrently."""
@@ -1318,15 +1410,15 @@ class TestUserEventConcurrency:
             #         changed_at=datetime.now(timezone.utc)
             #     )
             # ]
-            # 
+            #
             # # Act
             # tasks = [mock_event_bus.publish(event) for event in events]
             # await asyncio.gather(*tasks)
-            # 
+            #
             # # Assert
             # assert mock_event_bus.publish.call_count == 3
             pass
-    
+
     @pytest.mark.asyncio
     async def test_event_ordering_preservation(self):
         """Test that event ordering is preserved in event bus."""
@@ -1334,24 +1426,24 @@ class TestUserEventConcurrency:
             # # Arrange
             # mock_event_bus = AsyncMock()
             # user_id = 12345678
-            # 
+            #
             # create_event = UserCreatedEvent(
             #     user_id=user_id,
             #     first_name="Diana",
             #     language_code="es",
             #     created_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # update_event = UserUpdatedEvent(
             #     user_id=user_id,
             #     changes={"username": {"old": None, "new": "diana_bot"}},
             #     updated_at=datetime.now(timezone.utc)
             # )
-            # 
+            #
             # # Act
             # await mock_event_bus.publish(create_event)
             # await mock_event_bus.publish(update_event)
-            # 
+            #
             # # Assert
             # # Verify events were published in order
             # calls = mock_event_bus.publish.call_args_list
