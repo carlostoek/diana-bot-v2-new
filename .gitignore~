@@ -1,0 +1,5 @@
+# Claude Code configuration
+.claude/
+
+# MCP configuration
+.mcp.json
