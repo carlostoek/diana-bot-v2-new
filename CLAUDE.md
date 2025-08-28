@@ -58,11 +58,21 @@ This is a **greenfield project** with:
 - Error handling with custom exceptions
 
 ## TESTING STANDARDS
-- Factory pattern for test objects
-- pytest fixtures for common setups
-- Mock external dependencies
-- Integration tests with testcontainers
-- Performance benchmarks for critical paths
+- **Frameworks**: The project uses `pytest` as the primary testing framework.
+- **Test Object Generation**: A factory pattern is employed for creating test objects, ensuring consistent and reusable test data.
+- **Fixtures**: `pytest` fixtures are used for setting up common test preconditions and resources, such as service instances or event bus connections.
+- **Mocking**: External dependencies are mocked in unit tests to ensure isolation.
+- **Coverage**: The project enforces a strict code coverage requirement of **>90%** for critical business logic, verified via `pytest-cov`.
+- **Performance**: Performance benchmarks are planned for critical execution paths.
+
+## DATABASE TESTING
+- **Current Method**: Database transaction integrity is currently verified using **in-memory mock databases**. These mocks simulate transaction behaviors (commit, rollback) to test the logical correctness of data flow between services. An example can be found in `tests/integration/test_database_transaction_integration.py`.
+- **Intended Pattern (Testcontainers)**: The long-term strategy is to use `testcontainers` to spin up ephemeral **PostgreSQL** instances for integration tests. This will validate database-specific queries, constraints, and transaction handling against a real database environment. **This has not been implemented yet.**
+
+## EVENT BUS INTEGRATION TESTING
+- **Live Bus Testing**: Integration tests for the event bus use a live, in-memory instance of the `EventBus` to test real-time event publishing and handling between different services.
+- **Pattern**: Tests verify that services correctly subscribe to events, publish events upon completing actions, and that handlers in other services are triggered as expected.
+- **Failure Scenarios**: Tests include scenarios like event bus failures to ensure services remain resilient and that core transactions are not compromised by event delivery issues. An example can be found in `tests/integration/test_database_transaction_integration.py`.
 
 ## QUALITY GATES BEFORE ANY COMMIT
 ```bash
@@ -175,3 +185,68 @@ flake8>=6.0.0
 - Use the detailed technical architecture doc as the implementation blueprint
 - Leer, comprender y basarse en el documento de development.md para el desarrollo.
 - Al término de cada fase, realiza un commit según lo estipulado en el documento de desarrollo con un mensaje explicativo. Evite el uso de referencias a Claude Code al final del commit. Esto ya lo hace Git. Evitemos redundancias.
+
+---
+
+## Project Intelligence & Requirements
+
+This section provides a summary of key project details derived from the codebase and planning documents.
+
+
+
+### Database Schema for User Data
+The primary user model is `TelegramUser` defined in `src/modules/user/models.py`. This dataclass serves as the schema for the user table.
+- **Core Identity:** `telegram_id`, `first_name`, `username`, `last_name`.
+- **Onboarding State Machine:** `onboarding_state` (Enum: `NEWCOMER`, `QUIZ_STARTED`, `PERSONALITY_DETECTED`, etc.) tracks user progress.
+- **Personality Detection:** `personality_dimensions` (a dictionary for exploration, competitiveness, narrative, social scores), `personality_archetype`, and `personality_confidence`.
+- **System Metadata:** `created_at`, `updated_at`, `is_active`.
+- **Engagement:** `tutorial_progress`, `adaptive_context`, `behavioral_profile`.
+
+### MVP vs. Advanced Features
+From the Product Requirements Document (`docs/planning/01-PRD.md`):
+
+**MVP Features:**
+- **F1: Sistema de Onboarding Inteligente:** A personalized introduction to quickly show the bot's value.
+- **F2: Motor de Gamificación Base:** A point system ("Besitos"), achievements, and leaderboards.
+- **F3: Experiencia Narrativa Interactiva:** A main story with branching decisions.
+- **F4: Panel de Administración Básico:** For user and content management.
+
+**Post-MVP Features (Advanced):**
+- **F5: Sistema de Monetización Avanzado:** Virtual store, VIP subscriptions.
+- **F6: IA de Personalización Avanzada:** Mood detection, behavior prediction.
+- **F7: Ecosystem Expansion:** Multi-channel integration, third-party API.
+
+### Onboarding Strategy: Simple vs. Complex
+The user onboarding process is designed to be progressively engaging, moving from a simple welcome to a more complex personality analysis.
+
+- **Simple Onboarding (US-001):** The initial interaction is a personalized, attractive welcome message. The goal is to immediately capture interest and present clear initial actions.
+- **Complex Personality Detection (US-002):** Following the initial welcome, the user is invited to a short, fun quiz. This quiz is designed to determine their user "archetype" across four dimensions (Exploration, Competitiveness, Narrative, Social) to tailor future content.
+
+### Diana MVP User Requirements
+The highest priority user stories for the MVP are:
+- **US-001: Primer Contacto Personalizado:** Critical for first impressions.
+- **US-002: Detección de Personalidad Inicial:** High priority for personalization.
+- **US-003: Tutorial Interactivo Gamificado:** High priority to demonstrate core features.
+- **US-005: Sistema de Puntos "Besitos":** Critical for the core gamification loop.
+- **US-006: Sistema de Logros Multinivel:** High priority to drive engagement.
+- **US-007: Leaderboards Dinámicos:** High priority for competitive users.
+- **US-009: Historia Principal Interactiva:** Critical for the narrative experience.
+- **US-013: Dashboard de Métricas Clave:** Critical for admin and monitoring.
+- **US-014: Gestión de Usuarios y Roles:** High priority for community management.
+- **US-015: Gestión de Contenido y Configuración:** High priority for a dynamic bot.
+
+- X
+
+r/Claud...
+
+### Registros de Decisiones (ADRs) Arquitectónicas
+
+Las decisiones técnicas se documentan en `docs/ADRs/
+
+`. Decisiones
+
+arquitectónicas clave:
+
+**ADR-001**: Ejemplo de ADR
+
+**Directiva del Asistente de IA**: Al discutir la arquitectura o tomar decisiones técnicas, siempre haz referencia a los ADRs relevantes. Si se toma una nueva decisión arquitectónica durante el desarrollo, crea o actualiza un ADR para documentarla. Esto asegura que todas las decisiones técnicas tengan una justificación clara y puedan revisarse si es necesario.
