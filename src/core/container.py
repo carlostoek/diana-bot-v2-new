@@ -3,6 +3,8 @@ from src.core.database import SessionLocal
 from src.core.event_bus import EventBus
 from src.modules.user.repository import UserRepository
 from src.modules.user.service import UserService
+from src.services.gamification.repository import GamificationRepository
+from src.services.gamification.service import GamificationService
 
 class Container(containers.DeclarativeContainer):
 
@@ -19,10 +21,19 @@ class Container(containers.DeclarativeContainer):
         UserRepository,
         db_session=db_session,
     )
+    gamification_repository = providers.Factory(
+        GamificationRepository,
+        db_session=db_session,
+    )
 
     # Services
     user_service = providers.Factory(
         UserService,
         user_repository=user_repository,
+        event_bus=event_bus,
+    )
+    gamification_service = providers.Factory(
+        GamificationService,
+        repository=gamification_repository,
         event_bus=event_bus,
     )
