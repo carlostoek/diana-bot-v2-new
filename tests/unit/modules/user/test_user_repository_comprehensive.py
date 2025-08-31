@@ -16,7 +16,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.modules.user.repository import UserRepository
-from src.modules.user.models import TelegramUser
+from src.modules.user.models import User, DuplicateUserError, UserNotFoundError
 
 
 @pytest.fixture
@@ -30,24 +30,34 @@ def mock_session():
 
 
 @pytest.fixture
-def user_repository(mock_session):
+def user_repository():
     """Create UserRepository with mock session."""
-    return UserRepository(mock_session)
+    # Note: Our UserRepository uses asyncpg, not SQLAlchemy
+    from unittest.mock import AsyncMock, MagicMock
+    
+    pool = AsyncMock()
+    conn = AsyncMock()
+    
+    # Create proper async context manager mock
+    mock_context_manager = MagicMock()
+    mock_context_manager.__aenter__ = AsyncMock(return_value=conn)
+    mock_context_manager.__aexit__ = AsyncMock(return_value=None)
+    
+    # Make sure acquire() returns the context manager directly (not a coroutine)
+    pool.acquire = MagicMock(return_value=mock_context_manager)
+    
+    return UserRepository(pool), pool, conn
 
 
 @pytest.fixture
 def sample_user():
-    """Create sample TelegramUser for testing."""
-    return TelegramUser(
-        telegram_id=12345,
+    """Create sample User for testing."""
+    return User(
+        user_id=12345,
         first_name="Test User",
         username="testuser",
         last_name="Surname",
         language_code="es",
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
-        is_active=True,
-        onboarding_state="newcomer",
         onboarding_completed=False,
         tutorial_completed=False,
         tutorial_progress=None,
@@ -386,7 +396,7 @@ class TestUserRepositoryUpdateOperations:
         assert len(result.tutorial_progress["sections_completed"]) == 3
         assert result.adaptive_context["new_behavioral_pattern"] == "social_explorer"
 
-    def _create_updated_mock_row(self, user: TelegramUser):
+    def _create_updated_mock_row(self, user: User):
         """Helper method to create mock row for updated user."""
         mock_row = Mock()
         for attr_name in [

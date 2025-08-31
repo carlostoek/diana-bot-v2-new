@@ -18,8 +18,15 @@ class TestUserRepository:
         """Mock database connection pool."""
         pool = AsyncMock()
         conn = AsyncMock()
-        pool.acquire.return_value.__aenter__.return_value = conn
-        pool.acquire.return_value.__aexit__.return_value = None
+        
+        # Create proper async context manager mock
+        mock_context_manager = MagicMock()
+        mock_context_manager.__aenter__ = AsyncMock(return_value=conn)
+        mock_context_manager.__aexit__ = AsyncMock(return_value=None)
+        
+        # Make sure acquire() returns the context manager directly (not a coroutine)
+        pool.acquire = MagicMock(return_value=mock_context_manager)
+        
         return pool, conn
 
     @pytest.fixture
@@ -321,9 +328,9 @@ class TestCreateUserRepository:
     @patch('src.modules.user.repository.asyncpg')
     async def test_create_user_repository_success(self, mock_asyncpg):
         """Test successful repository creation."""
-        # Mock asyncpg
+        # Mock asyncpg - create_pool should be an async function that returns a pool
         mock_pool = AsyncMock()
-        mock_asyncpg.create_pool.return_value = mock_pool
+        mock_asyncpg.create_pool = AsyncMock(return_value=mock_pool)
         
         repository = await create_user_repository("postgresql://test")
         
@@ -368,8 +375,13 @@ class TestRepositoryErrorHandling:
             conn.execute.side_effect = Exception("Database error")
             conn.fetchrow.side_effect = Exception("Database error")
             
-        pool.acquire.return_value.__aenter__.return_value = conn
-        pool.acquire.return_value.__aexit__.return_value = None
+        # Create proper async context manager mock
+        mock_context_manager = MagicMock()
+        mock_context_manager.__aenter__ = AsyncMock(return_value=conn)
+        mock_context_manager.__aexit__ = AsyncMock(return_value=None)
+        
+        # Make sure acquire() returns the context manager directly (not a coroutine)
+        pool.acquire = MagicMock(return_value=mock_context_manager)
         
         return pool, conn
 
