@@ -16,10 +16,13 @@ class GamificationRepository(IGamificationRepository):
     def get_user_gamification_stats(self, user_id: int) -> Optional[UserGamification]:
         return self.db.query(UserGamification).filter_by(user_id=user_id).first()
 
-    def create_or_update_user_gamification_stats(self, stats: UserGamification) -> UserGamification:
-        self.db.merge(stats)
+    def create_or_update_user_gamification_stats(self, stats_data: UserGamification) -> UserGamification:
+        # Using merge for simplicity, it handles both insert and update.
+        # For this to work correctly, the object should be transient or detached.
+        merged_stats = self.db.merge(stats_data)
         self.db.commit()
-        return stats
+        # After commit, the merged_stats is persistent and bound to the session.
+        return merged_stats
 
     def create_points_transaction(self, transaction: PointsTransaction) -> PointsTransaction:
         self.db.add(transaction)

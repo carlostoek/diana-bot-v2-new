@@ -488,6 +488,7 @@ class UserEvent(IEvent):
         "content_shared",
         "feedback_submitted",
         "language_changed",
+        "daily_activity",
     }
 
     FORBIDDEN_PII_KEYS = {"email", "phone", "address", "full_name", "credit_card"}
