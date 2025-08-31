@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from core.interfaces import IEvent
+from src.core.interfaces import IEvent
 
 
 class ActionType(Enum):

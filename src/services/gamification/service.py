@@ -16,11 +16,12 @@ Key Features:
 
 import asyncio
 import logging
+import time
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from core.events import EventBus
-from core.interfaces import IEvent
+from src.core.events import AdminEvent, EventBus, GameEvent, SystemEvent
+from src.core.interfaces import IEvent
 
 from .engines import (
     AchievementEngine,
@@ -195,8 +196,6 @@ class GamificationService(IGamificationService):
         if not self._initialized:
             raise GamificationServiceError("Service not initialized")
 
-        import time
-
         start_time = time.time()
 
         try:
@@ -211,8 +210,6 @@ class GamificationService(IGamificationService):
             achievements_unlocked = []
             if points_result.success and self.enable_auto_achievements:
                 # Create a mock event for achievement checking
-                from core.events import GameEvent
-
                 mock_event = GameEvent(
                     user_id=user_id,
                     action=action_type.value,
@@ -694,8 +691,6 @@ class GamificationService(IGamificationService):
     ) -> None:
         """Publish points awarded event to Event Bus."""
         try:
-            from core.events import GameEvent
-
             event = GameEvent(
                 user_id=points_result.user_id,
                 action="points_awarded",
@@ -723,8 +718,6 @@ class GamificationService(IGamificationService):
     ) -> None:
         """Publish achievement unlocked event to Event Bus."""
         try:
-            from core.events import GameEvent
-
             event = GameEvent(
                 user_id=user_id,
                 action="achievement_unlocked",
@@ -748,8 +741,6 @@ class GamificationService(IGamificationService):
     ) -> None:
         """Publish admin adjustment event to Event Bus."""
         try:
-            from core.events import AdminEvent
-
             event = AdminEvent(
                 admin_id=admin_id,
                 action_type="points_adjusted",
@@ -772,8 +763,6 @@ class GamificationService(IGamificationService):
     ) -> None:
         """Publish system event to Event Bus."""
         try:
-            from core.events import SystemEvent
-
             event = SystemEvent(
                 component="gamification_service",
                 event_type=event_type,
@@ -790,8 +779,6 @@ class GamificationService(IGamificationService):
         self, start_time: float, success: bool, points_awarded: int = 0
     ) -> None:
         """Update service performance metrics."""
-        import time
-
         processing_time_ms = (time.time() - start_time) * 1000
 
         self.service_metrics["total_actions_processed"] += 1

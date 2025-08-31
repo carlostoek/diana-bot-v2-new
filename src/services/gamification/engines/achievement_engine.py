@@ -19,7 +19,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from core.interfaces import IEvent
+from src.core.interfaces import IEvent
 
 from ..interfaces import (
     AchievementCategory,
@@ -27,11 +27,11 @@ from ..interfaces import (
     IAchievementEngine,
 )
 from ..models import (
-    DEFAULT_ACHIEVEMENTS,
     Achievement,
     UserAchievement,
     UserGamification,
 )
+from ..data import DEFAULT_ACHIEVEMENTS
 
 # Configure logging
 logger = logging.getLogger(__name__)
