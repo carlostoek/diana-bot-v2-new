@@ -689,3 +689,39 @@ class IGamificationService(ABC):
             Health information including engine status and performance metrics
         """
         pass
+
+    @abstractmethod
+    async def update_daily_streak(self, user_id: int) -> bool:
+        """
+        Updates the user's daily streak. Returns True if streak was updated.
+        """
+        pass
+
+
+from .models import UserGamification, PointsTransaction, Achievement, UserAchievement
+
+class IGamificationRepository(ABC):
+
+    @abstractmethod
+    def get_user_gamification_stats(self, user_id: int) -> Optional[UserGamification]:
+        ...
+
+    @abstractmethod
+    def create_or_update_user_gamification_stats(self, stats: UserGamification) -> UserGamification:
+        ...
+
+    @abstractmethod
+    def create_points_transaction(self, transaction: PointsTransaction) -> PointsTransaction:
+        ...
+
+    @abstractmethod
+    def get_achievements(self) -> List[Achievement]:
+        ...
+
+    @abstractmethod
+    def get_user_achievements(self, user_id: int) -> List[UserAchievement]:
+        ...
+
+    @abstractmethod
+    def grant_user_achievement(self, user_achievement: UserAchievement) -> UserAchievement:
+        ...
