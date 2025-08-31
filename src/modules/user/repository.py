@@ -15,3 +15,12 @@ class UserRepository(IUserRepository):
         self.db.commit()
         self.db.refresh(db_user)
         return db_user
+
+    def update_user(self, user_id: int, user_data: dict) -> User | None:
+        db_user = self.get_user_by_id(user_id)
+        if db_user:
+            for key, value in user_data.items():
+                setattr(db_user, key, value)
+            self.db.commit()
+            self.db.refresh(db_user)
+        return db_user
