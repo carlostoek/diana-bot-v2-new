@@ -13,7 +13,7 @@ async def test_imports():
     print("Testing narrative service imports...")
     
     # Test core service import
-    from services.narrative.service import NarrativeService
+    from src.services.narrative.services.narrative_service import NarrativeService
     print("✅ NarrativeService import successful")
     
     # Test engine imports

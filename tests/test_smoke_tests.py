@@ -31,7 +31,7 @@ class TestEventBusSmoke:
         await bus.initialize()
         
         try:
-            event = UserEvent(user_id=1, event_type="test", user_data={})
+            event = UserEvent(user_id=1, event_type="login", user_data={})
             await bus.publish(event)  # No debe lanzar excepción
             
         finally:
@@ -155,7 +155,7 @@ class TestEventModelsSmoke:
         """UserEvent tiene atributos requeridos."""
         event = UserEvent(
             user_id=123,
-            event_type="test",
+            event_type="login",
             user_data={}
         )
         

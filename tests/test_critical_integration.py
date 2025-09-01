@@ -72,7 +72,7 @@ class TestCriticalSystemIntegration:
         # Test 1: Publicar evento simple
         event = UserEvent(
             user_id=123,
-            event_type="test",
+            event_type="login",
             user_data={"test": "data"}
         )
         
@@ -255,7 +255,7 @@ async def test_full_system_smoke_test():
         # Test publicación básica
         event = UserEvent(
             user_id=999,
-            event_type="smoke_test", 
+            event_type="login", 
             user_data={"test": True}
         )
         

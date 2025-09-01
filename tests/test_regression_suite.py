@@ -184,7 +184,7 @@ class TestEventBusRegression:
             await bus.subscribe("user.*", handler)
             
             # Publicar eventos que deben coincidir
-            event1 = UserEvent(user_id=1, event_type="user.registered", user_data={})
+            event1 = UserEvent(user_id=1, event_type="registered", user_data={})
             event2 = UserEvent(user_id=2, event_type="user.updated", user_data={})
             
             await bus.publish(event1)

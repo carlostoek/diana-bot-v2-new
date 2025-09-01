@@ -32,7 +32,7 @@ class TestSystemSafetyNet:
         try:
             event = UserEvent(
                 user_id=123,
-                event_type="test",
+                event_type="login",
                 user_data={}
             )
             
@@ -97,7 +97,7 @@ class TestSystemSafetyNet:
             # Publicar
             event = UserEvent(
                 user_id=123,
-                event_type="test",
+                event_type="login",
                 user_data={}
             )
             await bus.publish(event)
