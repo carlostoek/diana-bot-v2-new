@@ -1,1 +1,1 @@
-"""Test package for Diana Bot V2."""
+# Tests para el estado actual del proyecto
