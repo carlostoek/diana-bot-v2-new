@@ -24,3 +24,6 @@ class UserRepository(IUserRepository):
             self.db.commit()
             self.db.refresh(db_user)
         return db_user
+
+def create_user_repository(db_session: Session) -> IUserRepository:
+    return UserRepository(db_session)

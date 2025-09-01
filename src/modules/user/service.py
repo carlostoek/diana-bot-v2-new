@@ -100,3 +100,6 @@ class UserService(IUserService):
 
         self._rate_limit_requests[user_id].append(now)
         return False # Not rate limited
+
+def create_user_service(user_repository: IUserRepository, event_bus: IEventBus) -> IUserService:
+    return UserService(user_repository, event_bus)

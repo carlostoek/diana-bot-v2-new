@@ -1,5 +1,44 @@
 from sqlalchemy import Column, BigInteger, String, DateTime, Boolean, func
 from src.core.database import Base
+from enum import Enum
+from dataclasses import dataclass
+from typing import Optional
+
+class UserState(Enum):
+    NEW = "new"
+    ONBOARDING = "onboarding"
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+
+class DuplicateUserError(Exception):
+    """Raised when attempting to create a user that already exists."""
+    pass
+
+class UserNotFoundError(Exception):
+    """Raised when a user is not found in the repository."""
+    pass
+
+class InvalidUserDataError(Exception):
+    """Raised when user data provided is invalid."""
+    pass
+
+@dataclass
+class UserStats:
+    user_id: int
+    total_points: int
+    level: int
+    achievements: list
+
+@dataclass
+class TelegramUser:
+    id: int
+    first_name: str
+    last_name: Optional[str]
+    username: Optional[str]
+
+class UserCreateRequest:
+    def __init__(self, telegram_user: TelegramUser):
+        self.telegram_user = telegram_user
 
 class User(Base):
     __tablename__ = "users"

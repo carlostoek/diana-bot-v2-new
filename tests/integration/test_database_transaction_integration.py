@@ -14,8 +14,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import pytest
 import pytest_asyncio
 
-from core.events import EventBus
-from core.interfaces import IEvent
+from src.core.events import EventBus
+from src.core.interfaces import IEvent
 from services.gamification.interfaces import (
     ActionType,
     MultiplierType,

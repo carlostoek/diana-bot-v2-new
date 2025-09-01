@@ -10,7 +10,7 @@ import asyncio
 import pytest
 import pytest_asyncio
 
-from core.events import EventBus, GameEvent, NarrativeEvent
+from src.core.events import EventBus, GameEvent, NarrativeEvent
 from services.gamification.interfaces import ActionType
 from services.gamification.service import GamificationService
 

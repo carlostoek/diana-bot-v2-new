@@ -14,10 +14,12 @@ from .achievement_engine import AchievementEngine
 from .anti_abuse_validator import AntiAbuseValidator
 from .leaderboard_engine import LeaderboardEngine
 from .points_engine import PointsEngine
+from .points_engine_fixed import FixedPointsEngine
 
 __all__ = [
     "PointsEngine",
     "AchievementEngine",
     "LeaderboardEngine",
     "AntiAbuseValidator",
+    "FixedPointsEngine",
 ]
