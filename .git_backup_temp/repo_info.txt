@@ -1,120 +1,26 @@
-# Repository Reset Backup - Mon Sep  1 10:49:20 CST 2025
+# Repository Reset Backup - Mon Sep  1 12:07:53 CST 2025
 # Repository: diana-bot-v2-new
 # Branch: develop
 # Remote: git@github.com:carlostoek/diana-bot-v2-new.git
 
 # Git Status Before Reset:
 On branch develop
-Your branch is up to date with 'origin/develop'.
+Your branch is ahead of 'origin/develop' by 1 commit.
+  (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add/rm <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-	modified:   pytest.ini
-	modified:   src/core/event_bus.py
-	modified:   src/services/gamification/engines/points_engine_fixed.py
-	deleted:    src/services/narrative/tests/test_narrative_engine.py
-	modified:   test_coverage_check.py
-	modified:   tests/test_critical_integration.py
-	modified:   tests/test_regression_suite.py
-	modified:   tests/test_safety_net.py
-	modified:   tests/test_smoke_tests.py
-	deleted:    tests_old_backup_20250831/__init__.py
-	deleted:    tests_old_backup_20250831/integration/__init__.py
-	deleted:    tests_old_backup_20250831/integration/test_comprehensive_integration_validation.py
-	deleted:    tests_old_backup_20250831/integration/test_current_user_service_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_database_transaction_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_error_recovery_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_event_bus_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_full_flow.py
-	deleted:    tests_old_backup_20250831/integration/test_gamification_eventbus_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_integration_diagnostics.py
-	deleted:    tests_old_backup_20250831/integration/test_narrative_service_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_performance_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_quick_integration_validation.py
-	deleted:    tests_old_backup_20250831/integration/test_repository_postgresql_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_user_event_bus_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_user_gamification_eventbus_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_user_gamification_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_user_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_user_repository_integration_fixed.py
-	deleted:    tests_old_backup_20250831/integration/test_user_repository_testcontainers.py
-	deleted:    tests_old_backup_20250831/integration/test_user_service_integration.py
-	deleted:    tests_old_backup_20250831/integration/test_userservice_integration_validation.py
-	deleted:    tests_old_backup_20250831/performance/test_user_performance.py
-	deleted:    tests_old_backup_20250831/performance/test_userservice_performance_audit.py
-	deleted:    tests_old_backup_20250831/performance/test_userservice_performance_audit_fixed.py
-	deleted:    tests_old_backup_20250831/unit/__init__.py
-	deleted:    tests_old_backup_20250831/unit/core/__init__.py
-	deleted:    tests_old_backup_20250831/unit/core/test_event_bus.py
-	deleted:    tests_old_backup_20250831/unit/core/test_event_interfaces.py
-	deleted:    tests_old_backup_20250831/unit/core/test_events.py
-	deleted:    tests_old_backup_20250831/unit/modules/__init__.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/__init__.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_current_user_service.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_data_consistency.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_event_bus_integration.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_events.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_migrations.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_models.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_performance_validation.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_registration_integrity.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_repository.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_repository_jsonb.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_service.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_user_events.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_user_factories.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_user_repository.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_user_repository_comprehensive.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_user_repository_fixed.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_user_service.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_user_service_comprehensive.py
-	deleted:    tests_old_backup_20250831/unit/modules/user/test_user_workflow_integration.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/INFORME_PROBLEMAS.md
-	deleted:    tests_old_backup_20250831/unit/services/gamification/PRODUCTION_READINESS_ASSESSMENT.md
-	deleted:    tests_old_backup_20250831/unit/services/gamification/__init__.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/fixed_points_engine.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/minimal_points_engine.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_anti_abuse_validation.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_concurrent_operations_safety.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_critical_integrity_diagnosis.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_database_transaction_integrity.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_database_transactions.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_diagnostic.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_eventbus_integration_comprehensive.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_eventbus_integration_critical.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_failure_scenarios_resilience.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_fixed_points_engine.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_gamification_service.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_gamification_service_logic.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_micro.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_minimal_engine.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_performance_benchmarks.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_points_engine.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_points_integrity.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_points_integrity_comprehensive.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_points_integrity_minimal.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_ultra_minimal_diagnosis.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/test_ultra_minimal_engine.py
-	deleted:    tests_old_backup_20250831/unit/services/gamification/ultra_minimal_engine.py
-	deleted:    tests_old_backup_20250831/unit/services/narrative/test_character_system_comprehensive.py
-	deleted:    tests_old_backup_20250831/unit/services/narrative/test_decision_engine_comprehensive.py
-	deleted:    tests_old_backup_20250831/unit/services/narrative/test_narrative_service.py
-	deleted:    tests_old_backup_20250831/unit/services/narrative/test_narrative_service_comprehensive.py
-	deleted:    tests_old_backup_20250831/unit/services/narrative/test_story_engine_comprehensive.py
-	deleted:    tests_old_backup_20250831/unit/telegram_adapter/test_handlers.py
-	deleted:    tests_old_backup_20250831/unit/test_user_service.py
-	deleted:    tests_old_backup_20250831/unit/test_utils.py
-
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-	.git_backup_temp/
-	narrativo.md
-	reset.sh
+	modified:   .git_backup_temp/repo_info.txt
+	deleted:    .mcp.json
+	deleted:    CLAUDE.md
+	deleted:    requirements.txt
+	modified:   reset.sh
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
 # Recent Commits:
+d0d1dad Auto-commit antes de repository reset - 2025-09-01 10:49
 c8eb3c9  🛡️ RED DE SEGURIDAD -     DIANA BOT V2     ## ✅ ESTADO: RED DE     SEGURIDAD IMPLEMENTADA Y     FUNCIONANDO     ### Componentes de la Red de      Seguridad     #### 1. **Validador     Principal** -     - ✅ **Validación de     importaciones**: Verifica     que todos los módulos     críticos importan     correctamente     - ✅ **Validación de     modelos**: TelegramUser,     UserState enum funcionan     - ✅ **Validación de Event     Bus**: Inicialización,     publicación, health check,     estadísticas
 97fe88b Merge pull request #5 from carlostoek/feature/complete-user-service-phase
 fa30e69 feat: Implement project foundation and basic services
@@ -124,7 +30,6 @@ fa30e69 feat: Implement project foundation and basic services
 7411f3b feat: Integrate services via event-driven architecture
 7cec69c fix git
 0a9232e feat: Implement gamification service and core architecture
-7a69b44 feat: Implement basic Telegram adapter and handlers
 
 # Branches:
 * develop

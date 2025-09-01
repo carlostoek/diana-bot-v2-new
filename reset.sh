@@ -159,37 +159,243 @@ check_uncommitted_changes() {
 }
 
 # Borrar archivos y directorios
+# Borrar archivos y directorios - VERSIÓN ULTRA ROBUSTA
 cleanup_repository() {
     log_header "=== LIMPIANDO REPOSITORIO ==="
     
+    # Deshabilitar set -e temporalmente para manejar errores manualmente
+    set +e
+    
     local deleted_files=0
     local deleted_dirs=0
+    local errors=0
+    local total_items=0
     
-    # Borrar archivos (excepto los protegidos)
-    find . -maxdepth 1 -type f \
+    # Crear arrays para almacenar los elementos a borrar
+    local files_to_delete=()
+    local dirs_to_delete=()
+    
+    log_info "Identificando archivos a borrar..."
+    
+    # Recopilar archivos a borrar (excepto los protegidos)
+    while IFS= read -r -d '' file; do
+        if [[ -f "$file" ]]; then
+            files_to_delete+=("$file")
+        fi
+    done < <(find . -maxdepth 1 -type f \
         -not -name ".gitignore" \
         -not -name "repo_reset.sh" \
-        -print0 | while IFS= read -r -d '' file; do
-        rm -f "$file"
-        echo "🗑️  Borrado: $file"
-        ((deleted_files++))
-    done
+        -not -name "reset.sh" \
+        -print0 2>/dev/null)
     
-    # Borrar directorios (excepto los protegidos)
-    find . -maxdepth 1 -type d \
+    log_info "Identificando directorios a borrar..."
+    
+    # Recopilar directorios a borrar (excepto los protegidos)  
+    while IFS= read -r -d '' dir; do
+        if [[ -d "$dir" ]]; then
+            dirs_to_delete+=("$dir")
+        fi
+    done < <(find . -maxdepth 1 -type d \
         -not -name "." \
         -not -name ".git" \
         -not -name "docs" \
         -not -name ".git_backup_temp" \
-        -print0 | while IFS= read -r -d '' dir; do
-        rm -rf "$dir"
-        echo "🗑️  Borrado: $dir/"
-        ((deleted_dirs++))
-    done
+        -print0 2>/dev/null)
     
-    log_success "Limpieza completada"
+    total_items=$((${#files_to_delete[@]} + ${#dirs_to_delete[@]}))
+    
+    # Mostrar qué se va a borrar
+    if [[ ${#files_to_delete[@]} -gt 0 ]]; then
+        log_info "Archivos a borrar: ${#files_to_delete[@]}"
+        for file in "${files_to_delete[@]}"; do
+            echo "  📄 $file"
+        done
+    else
+        log_info "No hay archivos que borrar"
+    fi
+    
+    echo ""
+    
+    if [[ ${#dirs_to_delete[@]} -gt 0 ]]; then
+        log_info "Directorios a borrar: ${#dirs_to_delete[@]}"
+        for dir in "${dirs_to_delete[@]}"; do
+            echo "  📁 $dir/"
+        done
+    else
+        log_info "No hay directorios que borrar"
+    fi
+    
+    echo ""
+    
+    if [[ $total_items -eq 0 ]]; then
+        log_success "El repositorio ya está limpio"
+        set -e  # Rehabilitar set -e
+        return 0
+    fi
+    
+    log_warning "Total de elementos a borrar: $total_items"
+    echo ""
+    read -p "¿Proceder con el borrado? (y/n): " confirm_delete
+    if [[ ! $confirm_delete =~ ^[Yy]$ ]]; then
+        log_info "Borrado cancelado por el usuario"
+        set -e  # Rehabilitar set -e
+        exit 0
+    fi
+    
+    echo ""
+    log_info "Iniciando proceso de borrado..."
+    
+    # Borrar archivos uno por uno
+    if [[ ${#files_to_delete[@]} -gt 0 ]]; then
+        log_info "Borrando archivos..."
+        for file in "${files_to_delete[@]}"; do
+            echo -n "🗑️  Borrando archivo: $file ... "
+            if [[ -f "$file" ]]; then
+                if rm -f "$file" 2>/dev/null; then
+                    echo "✅"
+                    ((deleted_files++))
+                else
+                    echo "❌ ERROR"
+                    log_error "No se pudo borrar: $file"
+                    ((errors++))
+                fi
+            else
+                echo "⏭️  Ya no existe"
+            fi
+            
+            # Pequeña pausa para evitar problemas de I/O
+            sleep 0.1
+        done
+    fi
+    
+    echo ""
+    
+    # Borrar directorios uno por uno
+    if [[ ${#dirs_to_delete[@]} -gt 0 ]]; then
+        log_info "Borrando directorios..."
+        for dir in "${dirs_to_delete[@]}"; do
+            echo -n "🗑️  Borrando directorio: $dir ... "
+            if [[ -d "$dir" ]]; then
+                if rm -rf "$dir" 2>/dev/null; then
+                    echo "✅"
+                    ((deleted_dirs++))
+                else
+                    echo "❌ ERROR"
+                    log_error "No se pudo borrar: $dir"
+                    ((errors++))
+                fi
+            else
+                echo "⏭️  Ya no existe"
+            fi
+            
+            # Pequeña pausa para evitar problemas de I/O
+            sleep 0.1
+        done
+    fi
+    
+    echo ""
+    
+    # Resumen de la limpieza
+    log_success "Proceso de limpieza completado:"
+    echo "  ✅ Archivos borrados: $deleted_files de ${#files_to_delete[@]}"
+    echo "  ✅ Directorios borrados: $deleted_dirs de ${#dirs_to_delete[@]}"
+    echo "  📊 Total procesado: $((deleted_files + deleted_dirs)) de $total_items elementos"
+    
+    if [[ $errors -gt 0 ]]; then
+        log_warning "❌ Errores encontrados: $errors"
+        echo ""
+        read -p "¿Continuar a pesar de los errores? (y/n): " continue_with_errors
+        if [[ ! $continue_with_errors =~ ^[Yy]$ ]]; then
+            log_error "Script detenido debido a errores"
+            set -e  # Rehabilitar set -e
+            exit 1
+        fi
+    fi
+    
+    echo ""
+    log_info "Verificando limpieza..."
+    
+    # Verificar que el directorio esté realmente limpio
+    local remaining_items=()
+    while IFS= read -r -d '' item; do
+        remaining_items+=("$item")
+    done < <(find . -maxdepth 1 \( -type f -o -type d \) \
+        -not -name "." \
+        -not -name ".git" \
+        -not -name "docs" \
+        -not -name ".gitignore" \
+        -not -name "repo_reset.sh" \
+        -not -name "reset.sh" \
+        -not -name ".git_backup_temp" \
+        -print0 2>/dev/null)
+    
+    if [[ ${#remaining_items[@]} -gt 0 ]]; then
+        log_warning "Aún quedan ${#remaining_items[@]} elementos sin borrar:"
+        for item in "${remaining_items[@]}"; do
+            if [[ -f "$item" ]]; then
+                echo "  📄 $item (archivo)"
+            elif [[ -d "$item" ]]; then
+                echo "  📁 $item (directorio)"
+            fi
+        done
+        echo ""
+        read -p "¿Intentar borrar elementos restantes manualmente? (y/n): " manual_cleanup
+        if [[ $manual_cleanup =~ ^[Yy]$ ]]; then
+            for item in "${remaining_items[@]}"; do
+                echo -n "🗑️  Borrando: $item ... "
+                if [[ -f "$item" ]]; then
+                    rm -f "$item" 2>/dev/null && echo "✅" || echo "❌"
+                elif [[ -d "$item" ]]; then
+                    rm -rf "$item" 2>/dev/null && echo "✅" || echo "❌"
+                fi
+            done
+        fi
+    else
+        log_success "✨ Directorio completamente limpiado"
+    fi
+    
+    # Rehabilitar set -e
+    set -e
+    
+    return 0
 }
 
+# También agregar esta función de utilidad para verificar el estado
+verify_cleanup() {
+    log_info "Verificación final del repositorio:"
+    
+    # Listar contenido actual
+    echo ""
+    echo "📂 Contenido actual del repositorio:"
+    ls -la | grep -v "^total" | while read line; do
+        if [[ $line =~ ^d.* ]]; then
+            echo "  📁 $(echo "$line" | awk '{print $NF}')"
+        else
+            echo "  📄 $(echo "$line" | awk '{print $NF}')"
+        fi
+    done
+    
+    echo ""
+    
+    # Verificar estructura esperada
+    if [[ -d .git ]]; then
+        echo "✅ .git/ - Directorio Git presente"
+    else
+        echo "❌ .git/ - FALTA directorio Git"
+    fi
+    
+    if [[ -d docs ]]; then
+        echo "✅ docs/ - Documentación presente"
+    else
+        echo "ℹ️  docs/ - No existe (será creado)"
+    fi
+    
+    if [[ -f .gitignore ]]; then
+        echo "✅ .gitignore - Presente"
+    else
+        echo "ℹ️  .gitignore - No existe (será creado)"
+    fi
+}
 # Crear estructura básica de proyecto
 create_project_structure() {
     log_header "=== CREANDO ESTRUCTURA DE PROYECTO ==="
