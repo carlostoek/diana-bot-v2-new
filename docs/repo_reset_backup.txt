@@ -1,0 +1,46 @@
+# Repository Reset Backup - Mon Sep  1 12:07:53 CST 2025
+# Repository: diana-bot-v2-new
+# Branch: develop
+# Remote: git@github.com:carlostoek/diana-bot-v2-new.git
+
+# Git Status Before Reset:
+On branch develop
+Your branch is ahead of 'origin/develop' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .git_backup_temp/repo_info.txt
+	deleted:    .mcp.json
+	deleted:    CLAUDE.md
+	deleted:    requirements.txt
+	modified:   reset.sh
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+# Recent Commits:
+d0d1dad Auto-commit antes de repository reset - 2025-09-01 10:49
+c8eb3c9  🛡️ RED DE SEGURIDAD -     DIANA BOT V2     ## ✅ ESTADO: RED DE     SEGURIDAD IMPLEMENTADA Y     FUNCIONANDO     ### Componentes de la Red de      Seguridad     #### 1. **Validador     Principal** -     - ✅ **Validación de     importaciones**: Verifica     que todos los módulos     críticos importan     correctamente     - ✅ **Validación de     modelos**: TelegramUser,     UserState enum funcionan     - ✅ **Validación de Event     Bus**: Inicialización,     publicación, health check,     estadísticas
+97fe88b Merge pull request #5 from carlostoek/feature/complete-user-service-phase
+fa30e69 feat: Implement project foundation and basic services
+01b8f04 mover tets
+4714232 test
+930e9a7 Merge pull request #4 from carlostoek/feature/complete-user-service-phase
+7411f3b feat: Integrate services via event-driven architecture
+7cec69c fix git
+0a9232e feat: Implement gamification service and core architecture
+
+# Branches:
+* develop
+  fix-test
+  main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/add-claude-github-actions-1755015878073
+  remotes/origin/backup/implementation-snapshot-2025-08-13
+  remotes/origin/develop
+  remotes/origin/feature/complete-user-service-phase
+  remotes/origin/main
+
+# Stashes:
+stash@{0}: WIP on main: 84ab84a Create 00-Setup.md
