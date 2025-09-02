@@ -33,13 +33,67 @@ class SQLAlchemyRepository(Generic[ModelType]):
         await self._session.flush()
 
 
-from src.domain.models import User
+from src.domain.models import User, Wallet, Transaction, Achievement
 
 
 class UserRepository(SQLAlchemyRepository[User]):
     """
     Repository for the User model.
     """
-
     def __init__(self, session: AsyncSession):
         super().__init__(session, User)
+
+
+class WalletRepository(SQLAlchemyRepository[Wallet]):
+    """
+    Repository for the Wallet model.
+    """
+    def __init__(self, session: AsyncSession):
+        super().__init__(session, Wallet)
+
+    async def get_by_user_id(self, user_id: int) -> Optional[Wallet]:
+        result = await self._session.execute(
+            select(self._model).filter_by(user_id=user_id)
+        )
+        return result.scalars().first()
+
+
+class TransactionRepository(SQLAlchemyRepository[Transaction]):
+    """
+    Repository for the Transaction model.
+    """
+    def __init__(self, session: AsyncSession):
+        super().__init__(session, Transaction)
+
+
+from src.domain.models import UserAchievement
+
+
+class AchievementRepository(SQLAlchemyRepository[Achievement]):
+    """
+    Repository for the Achievement model.
+    """
+    def __init__(self, session: AsyncSession):
+        super().__init__(session, Achievement)
+
+    async def get_by_name(self, name: str) -> Optional[Achievement]:
+        result = await self._session.execute(
+            select(self._model).filter_by(name=name)
+        )
+        return result.scalars().first()
+
+
+class UserAchievementRepository(SQLAlchemyRepository[UserAchievement]):
+    """
+    Repository for the UserAchievement model.
+    """
+    def __init__(self, session: AsyncSession):
+        super().__init__(session, UserAchievement)
+
+    async def find_by_user_and_achievement(
+        self, user_id: int, achievement_id: int
+    ) -> Optional[UserAchievement]:
+        result = await self._session.execute(
+            select(self._model).filter_by(user_id=user_id, achievement_id=achievement_id)
+        )
+        return result.scalars().first()

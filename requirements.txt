@@ -7,6 +7,7 @@ python-dotenv
 psycopg2-binary
 pydantic
 aiosqlite
+aiogram>=3.0.0,<4.0.0
 
 # Development dependencies
 pytest
