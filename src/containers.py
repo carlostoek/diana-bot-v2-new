@@ -26,6 +26,7 @@ from src.infrastructure.repositories import (
     AchievementRepository,
     UserAchievementRepository,
 )
+from src.infrastructure.uow import UnitOfWork
 
 
 class InfrastructureContainer(containers.DeclarativeContainer):
@@ -71,6 +72,11 @@ class InfrastructureContainer(containers.DeclarativeContainer):
     user_achievement_repository = providers.Factory(
         UserAchievementRepository,
         session=session_factory,
+    )
+
+    uow = providers.Factory(
+        UnitOfWork,
+        session_factory=session_factory,
     )
 
     redis_pool = providers.Singleton(
@@ -124,7 +130,6 @@ class ServiceContainer(containers.DeclarativeContainer):
 
     user_service = providers.Factory(
         UserService,
-        user_repository=infrastructure.user_repository,
         event_publisher=infrastructure.event_publisher,
     )
 
@@ -140,11 +145,6 @@ class ServiceContainer(containers.DeclarativeContainer):
 
     gamification_service = providers.Factory(
         GamificationService,
-        user_repo=infrastructure.user_repository,
-        wallet_repo=infrastructure.wallet_repository,
-        transaction_repo=infrastructure.transaction_repository,
-        achievement_repo=infrastructure.achievement_repository,
-        user_achievement_repo=infrastructure.user_achievement_repository,
         event_publisher=infrastructure.event_publisher,
     )
 

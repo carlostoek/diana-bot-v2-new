@@ -24,16 +24,17 @@ class AuthMiddleware(BaseMiddleware):
         event: TelegramObject,
         data: Dict[str, Any],
     ) -> Any:
-        # Get the telegram user from the event
         telegram_user = data.get("event_from_user")
         if not telegram_user:
             return await handler(event, data)
 
+        uow: IUnitOfWork = data["uow"]
+
         # Get or create the user from the database
-        user, is_new = await self._user_service.get_or_create_user(telegram_user)
+        user, is_new = await self._user_service.get_or_create_user(uow, telegram_user)
 
         # Update daily streak
-        await self._gamification_service.update_daily_streak(user)
+        await self._gamification_service.update_daily_streak(uow, user)
 
         # Pass the user and is_new flag to the handler
         data["user"] = user

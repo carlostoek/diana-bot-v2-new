@@ -9,6 +9,7 @@ from src.bot.main import start_bot
 
 
 from src.bot.middleware.auth import AuthMiddleware
+from src.bot.middleware.uow import UoWMiddleware
 
 
 from src.bot.events import event_listener
@@ -47,26 +48,31 @@ async def main() -> None:
     await setup_database(container)
 
     # Setup middleware
+    uow_provider = container.infrastructure.uow
     user_service = container.services.user_service()
     gamification_service = container.services.gamification_service()
+
+    uow_middleware = UoWMiddleware(uow_provider)
     auth_middleware = AuthMiddleware(user_service, gamification_service)
 
     bot = container.bot.bot()
     dispatcher = container.bot.dispatcher()
+    # The order is important: UoW middleware must come before Auth middleware
+    dispatcher.update.outer_middleware.register(uow_middleware)
     dispatcher.update.outer_middleware.register(auth_middleware)
 
-    # Get services for the event listener
+    # Get services
+    gamification_service = container.services.gamification_service()
     redis_client = container.infrastructure.redis_client()
-    onboarding_service = container.services.onboarding_service()
-    notification_service = container.services.notification_service()
+    service_provider = container.services
 
-    # Pass services to the dispatcher context
+    # Pass long-lived services to the dispatcher context
     dispatcher["gamification_service"] = gamification_service
 
     # Start the bot and the event listener concurrently
     await asyncio.gather(
         start_bot(bot, dispatcher),
-        event_listener(redis_client, onboarding_service, notification_service),
+        event_listener(redis_client, service_provider),
     )
 
 

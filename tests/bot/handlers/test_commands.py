@@ -14,16 +14,17 @@ async def test_start_handler():
     mock_message = AsyncMock()
     mock_user = User(id=1, first_name="Testy")
     mock_gamification_service = AsyncMock()
+    mock_uow = AsyncMock()
 
     # Call the handler
-    await start_handler(mock_message, mock_user, mock_gamification_service)
+    await start_handler(mock_message, mock_user, mock_uow, mock_gamification_service)
 
     # Get the expected keyboard
     expected_keyboard = get_start_keyboard()
 
     # Assert that the gamification service was called
     mock_gamification_service.unlock_achievement.assert_called_once_with(
-        mock_user.id, "First Steps"
+        mock_uow, mock_user.id, "First Steps"
     )
 
     # Assert that the reply method was called
@@ -42,10 +43,11 @@ async def test_balance_handler():
     mock_message = AsyncMock()
     mock_user = User(id=1, first_name="Testy")
     mock_gamification_service = AsyncMock()
+    mock_uow = AsyncMock()
     mock_gamification_service.get_wallet_by_user_id.return_value = Wallet(balance=123)
 
     # Call the handler
-    await balance_handler(mock_message, mock_user, mock_gamification_service)
+    await balance_handler(mock_message, mock_user, mock_uow, mock_gamification_service)
 
     # Assert that the reply method was called
     mock_message.reply.assert_called_once_with(

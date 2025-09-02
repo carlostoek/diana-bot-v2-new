@@ -5,22 +5,31 @@ from unittest.mock import AsyncMock
 from src.bot.middleware.auth import AuthMiddleware
 from src.services.user_service import UserService
 from src.infrastructure.repositories import UserRepository
+from src.bot.middleware.uow import UoWMiddleware
+from src.infrastructure.uow import UnitOfWork
 
 
 @pytest.mark.asyncio
-async def test_auth_middleware_creates_new_user(db_session):
+async def test_auth_middleware_creates_new_user(session_factory):
     """
     Integration test for the AuthMiddleware.
     Checks if a new user is created and passed to the handler.
     """
     # 1. Setup
-    user_repo = UserRepository(db_session)
     event_publisher = AsyncMock()
-    user_service = UserService(user_repo, event_publisher)
+    user_service = UserService(event_publisher)
     gamification_service = AsyncMock()
     middleware = AuthMiddleware(user_service, gamification_service)
 
     dp = Dispatcher()
+    # This test uses a real UoW with a real session
+    uow_provider = lambda: UnitOfWork(session_factory)
+
+    middleware = AuthMiddleware(user_service, gamification_service)
+    uow_middleware = UoWMiddleware(uow_provider)
+
+    dp = Dispatcher()
+    dp.update.outer_middleware.register(uow_middleware)
     dp.update.outer_middleware.register(middleware)
 
     # A mock handler that captures the data passed by the middleware
@@ -43,7 +52,6 @@ async def test_auth_middleware_creates_new_user(db_session):
 
     # 3. Process the update
     await dp.feed_update(AsyncMock(), update)
-    await db_session.commit()
 
     # 4. Assertions
     # Check that the handler was called
@@ -56,6 +64,8 @@ async def test_auth_middleware_creates_new_user(db_session):
     assert handler_args["user"].first_name == "Test"
 
     # Check that the user was actually created in the database
-    db_user = await user_repo.get(123)
-    assert db_user is not None
-    assert db_user.id == 123
+    async with session_factory() as session:
+        user_repo = UserRepository(session)
+        db_user = await user_repo.get(123)
+        assert db_user is not None
+        assert db_user.id == 123

@@ -21,12 +21,17 @@ async def async_engine():
 
 
 @pytest.fixture(scope="function")
-async def db_session(async_engine):
+def session_factory(async_engine):
+    """Provides a SQLAlchemy async session factory for the test session."""
+    return sessionmaker(
+        bind=async_engine, class_=AsyncSession, expire_on_commit=False
+    )
+
+
+@pytest.fixture(scope="function")
+async def db_session(session_factory):
     """
     Provides a SQLAlchemy async session for a test function.
     """
-    session_factory = sessionmaker(
-        bind=async_engine, class_=AsyncSession, expire_on_commit=False
-    )
     async with session_factory() as session:
         yield session
