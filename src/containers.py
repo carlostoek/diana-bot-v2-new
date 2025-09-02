@@ -65,6 +65,24 @@ class InfrastructureContainer(containers.DeclarativeContainer):
     )
 
 
+from aiogram import Bot, Dispatcher
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
+
+class BotContainer(containers.DeclarativeContainer):
+    """
+    Container for bot-related components.
+    """
+    config = providers.Object(settings)
+
+    bot = providers.Singleton(
+        Bot,
+        token=config.provided.TELEGRAM_BOT_TOKEN,
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+    )
+    dispatcher = providers.Singleton(Dispatcher)
+
+
 class ApplicationContainer(containers.DeclarativeContainer):
     """
     Application container with all dependencies.
@@ -78,5 +96,10 @@ class ApplicationContainer(containers.DeclarativeContainer):
 
     infrastructure = providers.Container(
         InfrastructureContainer,
+        config=config,
+    )
+
+    bot = providers.Container(
+        BotContainer,
         config=config,
     )
