@@ -1,3 +1,14 @@
+# Core dependencies
+redis
+dependency-injector
+sqlalchemy
+alembic
+python-dotenv
+psycopg2-binary
+pydantic
+aiosqlite
+
+# Development dependencies
 pytest
 pytest-asyncio
 flake8

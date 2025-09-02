@@ -1,26 +1,38 @@
 """
-Main application file
+Main application file for the Diana Bot.
 """
 
-import sys
-import os
-from pathlib import Path
+import asyncio
+from src.containers import ApplicationContainer
 
-# Add project root to Python path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
 
-from config.config import config, ENVIRONMENT
+from src.domain.events import Event
 
-def main():
-    """Main application entry point"""
-    print(f"🚀 Application starting in {ENVIRONMENT} mode")
-    
-    # Your application logic here
-    print("Hello, World!")
-    print(f"Project root: {project_root}")
-    
-    return 0
+
+async def main() -> None:
+    """
+    Main application entry point.
+    Initializes the container and starts the application.
+    """
+    container = ApplicationContainer()
+    container.wire(modules=[__name__])
+
+    config = container.config()
+    print(f"🚀 Application starting in {config.ENVIRONMENT} mode")
+
+    # Example of accessing a dependency
+    redis_client = await container.infrastructure.redis_client()
+    pong = await redis_client.ping()
+    print(f"Redis ping: {'PONG' if pong else 'FAIL'}")
+
+    # Example of publishing an event
+    event_publisher = container.infrastructure.event_publisher()
+    sample_event = Event(event_name="user_registered", payload={"user_id": 123})
+    await event_publisher.publish(channel="user_events", event=sample_event)
+
+    # The main application loop will go here
+    print("Application setup complete. Ready to run services.")
+
 
 if __name__ == "__main__":
-    exit(main())
+    asyncio.run(main())

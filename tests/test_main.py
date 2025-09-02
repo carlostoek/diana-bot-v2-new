@@ -1,43 +1,27 @@
 """
-Tests for main application
+Tests for main application entry point.
 """
 
 import pytest
-import sys
-from pathlib import Path
-
-# Add project root to Python path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-
+from unittest.mock import patch
 from src.main import main
 
-def test_main_function():
-    """Test that main function runs without error"""
-    result = main()
-    assert result == 0
 
-def test_project_structure():
-    """Test that project structure exists"""
-    assert project_root.exists()
-    assert (project_root / "src").exists()
-    assert (project_root / "tests").exists()
-    assert (project_root / "config").exists()
+from unittest.mock import patch, AsyncMock
 
-class TestProjectSetup:
-    """Test class for project setup validation"""
-    
-    def test_config_file_exists(self):
-        """Test that configuration file exists"""
-        config_file = project_root / "config" / "config.py"
-        assert config_file.exists()
-    
-    def test_main_file_exists(self):
-        """Test that main application file exists"""
-        main_file = project_root / "src" / "main.py"
-        assert main_file.exists()
-    
-    def test_readme_exists(self):
-        """Test that README file exists"""
-        readme_file = project_root / "README.md"
-        assert readme_file.exists()
+
+@pytest.mark.asyncio
+async def test_main_function_runs_without_error():
+    """
+    Test that the main function runs without raising an exception.
+    We patch the Redis client's ping method and the event publisher to avoid network calls.
+    """
+    with patch("redis.asyncio.Redis.ping", new_callable=AsyncMock, return_value=True) as mock_ping, \
+         patch("src.infrastructure.event_bus.EventPublisher.publish", new_callable=AsyncMock) as mock_publish:
+
+        await main()
+
+        mock_ping.assert_called_once()
+        mock_publish.assert_called_once()
+        # The main assertion is that no exception was raised
+        assert True
