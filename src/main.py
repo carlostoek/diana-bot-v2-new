@@ -14,6 +14,26 @@ from src.bot.middleware.auth import AuthMiddleware
 from src.bot.events import event_listener
 
 
+from src.domain.models import Achievement
+
+
+async def setup_database(container: ApplicationContainer):
+    """A helper function to setup initial database data."""
+    session_factory = container.infrastructure.session_factory()
+    async with session_factory() as session:
+        achievement_repo = container.infrastructure.achievement_repository(session=session)
+        first_steps = await achievement_repo.get_by_name("First Steps")
+        if not first_steps:
+            new_achievement = Achievement(
+                name="First Steps",
+                description="Start the bot for the first time.",
+                reward_points=10,
+            )
+            await achievement_repo.add(new_achievement)
+            await session.commit()
+            logging.info("Created 'First Steps' achievement.")
+
+
 async def main() -> None:
     """
     Main application entry point.
@@ -24,9 +44,12 @@ async def main() -> None:
     container = ApplicationContainer()
     container.wire(modules=[__name__, "src.bot.handlers"])
 
+    await setup_database(container)
+
     # Setup middleware
     user_service = container.services.user_service()
-    auth_middleware = AuthMiddleware(user_service)
+    gamification_service = container.services.gamification_service()
+    auth_middleware = AuthMiddleware(user_service, gamification_service)
 
     bot = container.bot.bot()
     dispatcher = container.bot.dispatcher()
@@ -35,11 +58,15 @@ async def main() -> None:
     # Get services for the event listener
     redis_client = container.infrastructure.redis_client()
     onboarding_service = container.services.onboarding_service()
+    notification_service = container.services.notification_service()
+
+    # Pass services to the dispatcher context
+    dispatcher["gamification_service"] = gamification_service
 
     # Start the bot and the event listener concurrently
     await asyncio.gather(
         start_bot(bot, dispatcher),
-        event_listener(redis_client, onboarding_service),
+        event_listener(redis_client, onboarding_service, notification_service),
     )
 
 

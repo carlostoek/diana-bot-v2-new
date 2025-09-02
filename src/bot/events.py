@@ -3,7 +3,8 @@ import json
 import logging
 import redis.asyncio as redis
 from src.services.onboarding_service import OnboardingService
-from src.domain.events import UserRegistered
+from src.services.notification_service import NotificationService
+from src.domain.events import UserRegistered, AchievementUnlocked
 
 logger = logging.getLogger(__name__)
 
@@ -11,6 +12,7 @@ logger = logging.getLogger(__name__)
 async def event_listener(
     redis_client: redis.Redis,
     onboarding_service: OnboardingService,
+    notification_service: NotificationService,
 ):
     """
     Listens for events on Redis pub/sub and triggers corresponding services.
@@ -35,6 +37,18 @@ async def event_listener(
                 if user_id:
                     logger.info(f"Processing UserRegistered event for user_id: {user_id}")
                     await onboarding_service.send_welcome_message(user_id)
+
+            elif event_name == AchievementUnlocked.event_name:
+                user_id = payload.get("user_id")
+                achievement_name = payload.get("achievement_name")
+                reward_points = payload.get("reward_points")
+                if user_id and achievement_name:
+                    logger.info(f"Processing AchievementUnlocked event for user {user_id}")
+                    await notification_service.send_achievement_unlocked_notification(
+                        user_id=user_id,
+                        achievement_name=achievement_name,
+                        reward_points=reward_points,
+                    )
 
         except json.JSONDecodeError:
             logger.warning("Could not decode event message: %s", message.get("data"))

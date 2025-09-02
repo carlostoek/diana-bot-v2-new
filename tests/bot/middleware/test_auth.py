@@ -17,7 +17,8 @@ async def test_auth_middleware_creates_new_user(db_session):
     user_repo = UserRepository(db_session)
     event_publisher = AsyncMock()
     user_service = UserService(user_repo, event_publisher)
-    middleware = AuthMiddleware(user_service)
+    gamification_service = AsyncMock()
+    middleware = AuthMiddleware(user_service, gamification_service)
 
     dp = Dispatcher()
     dp.update.outer_middleware.register(middleware)

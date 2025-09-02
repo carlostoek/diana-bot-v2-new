@@ -19,7 +19,13 @@ class CoreContainer(containers.DeclarativeContainer):
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.infrastructure.event_bus import EventPublisher
-from src.infrastructure.repositories import UserRepository
+from src.infrastructure.repositories import (
+    UserRepository,
+    WalletRepository,
+    TransactionRepository,
+    AchievementRepository,
+    UserAchievementRepository,
+)
 
 
 class InfrastructureContainer(containers.DeclarativeContainer):
@@ -44,6 +50,26 @@ class InfrastructureContainer(containers.DeclarativeContainer):
 
     user_repository = providers.Factory(
         UserRepository,
+        session=session_factory,
+    )
+
+    wallet_repository = providers.Factory(
+        WalletRepository,
+        session=session_factory,
+    )
+
+    transaction_repository = providers.Factory(
+        TransactionRepository,
+        session=session_factory,
+    )
+
+    achievement_repository = providers.Factory(
+        AchievementRepository,
+        session=session_factory,
+    )
+
+    user_achievement_repository = providers.Factory(
+        UserAchievementRepository,
         session=session_factory,
     )
 
@@ -85,6 +111,8 @@ class BotContainer(containers.DeclarativeContainer):
 
 from src.services.user_service import UserService
 from src.services.onboarding_service import OnboardingService
+from src.services.gamification_service import GamificationService
+from src.services.notification_service import NotificationService
 
 
 class ServiceContainer(containers.DeclarativeContainer):
@@ -103,6 +131,21 @@ class ServiceContainer(containers.DeclarativeContainer):
     onboarding_service = providers.Factory(
         OnboardingService,
         bot=bot.bot,
+    )
+
+    notification_service = providers.Factory(
+        NotificationService,
+        bot=bot.bot,
+    )
+
+    gamification_service = providers.Factory(
+        GamificationService,
+        user_repo=infrastructure.user_repository,
+        wallet_repo=infrastructure.wallet_repository,
+        transaction_repo=infrastructure.transaction_repository,
+        achievement_repo=infrastructure.achievement_repository,
+        user_achievement_repo=infrastructure.user_achievement_repository,
+        event_publisher=infrastructure.event_publisher,
     )
 
 
