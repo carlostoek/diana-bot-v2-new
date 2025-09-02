@@ -15,3 +15,11 @@ class Event(BaseModel):
 
     class Config:
         frozen = True
+
+
+class UserRegistered(Event):
+    """
+    Event published when a new user is registered.
+    """
+    event_name: str = "user_registered"
+    payload: Dict[str, Any]  # e.g., {"user_id": 123, "username": "test"}

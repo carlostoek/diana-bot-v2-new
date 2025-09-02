@@ -83,6 +83,29 @@ class BotContainer(containers.DeclarativeContainer):
     dispatcher = providers.Singleton(Dispatcher)
 
 
+from src.services.user_service import UserService
+from src.services.onboarding_service import OnboardingService
+
+
+class ServiceContainer(containers.DeclarativeContainer):
+    """
+    Container for application services.
+    """
+    infrastructure = providers.DependenciesContainer()
+    bot = providers.DependenciesContainer()
+
+    user_service = providers.Factory(
+        UserService,
+        user_repository=infrastructure.user_repository,
+        event_publisher=infrastructure.event_publisher,
+    )
+
+    onboarding_service = providers.Factory(
+        OnboardingService,
+        bot=bot.bot,
+    )
+
+
 class ApplicationContainer(containers.DeclarativeContainer):
     """
     Application container with all dependencies.
@@ -102,4 +125,10 @@ class ApplicationContainer(containers.DeclarativeContainer):
     bot = providers.Container(
         BotContainer,
         config=config,
+    )
+
+    services = providers.Container(
+        ServiceContainer,
+        infrastructure=infrastructure,
+        bot=bot,
     )
