@@ -12,6 +12,7 @@ from src.bot.middleware.auth import AuthMiddleware
 from src.bot.middleware.uow import UoWMiddleware
 
 
+
 from src.bot.events import event_listener
 
 
@@ -41,7 +42,7 @@ async def main() -> None:
     Initializes the container and starts the application.
     """
     logging.basicConfig(level=logging.INFO)
-
+    
     container = ApplicationContainer()
     container.wire(modules=[__name__, "src.bot.handlers"])
 
@@ -51,7 +52,7 @@ async def main() -> None:
     uow_provider = container.infrastructure.uow
     user_service = container.services.user_service()
     gamification_service = container.services.gamification_service()
-
+    
     uow_middleware = UoWMiddleware(uow_provider)
     auth_middleware = AuthMiddleware(user_service, gamification_service)
 
@@ -73,7 +74,6 @@ async def main() -> None:
     await asyncio.gather(
         start_bot(bot, dispatcher),
         event_listener(redis_client, service_provider),
-    )
 
 
 if __name__ == "__main__":

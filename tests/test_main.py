@@ -8,6 +8,7 @@ from unittest.mock import patch
 from src.main import main
 
 
+
 from unittest.mock import patch, AsyncMock
 
 
@@ -19,7 +20,7 @@ async def test_main_function_runs_without_error(monkeypatch):
     """
     # Patch the bot token to be a valid format
     monkeypatch.setattr("src.config.settings.TELEGRAM_BOT_TOKEN", "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
-
+    
     # Patch the bot's start_polling and the event_listener to prevent them from running
     with patch("src.main.start_bot", new_callable=AsyncMock) as mock_start_bot, \
          patch("src.main.event_listener", new_callable=AsyncMock) as mock_event_listener:
