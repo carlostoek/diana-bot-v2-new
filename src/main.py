@@ -12,6 +12,7 @@ from src.bot.middleware.auth import AuthMiddleware
 from src.bot.middleware.uow import UoWMiddleware
 
 
+
 from src.bot.events import event_listener
 
 
@@ -73,7 +74,6 @@ async def main() -> None:
     await asyncio.gather(
         start_bot(bot, dispatcher),
         event_listener(redis_client, service_provider),
-    )
 
 
 if __name__ == "__main__":
