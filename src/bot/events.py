@@ -19,14 +19,14 @@ async def _handle_event(event_name: str, payload: dict, container):
 
     for attempt in range(MAX_RETRIES):
         try:
-            if event_name == UserRegistered.event_name:
+            if event_name == "user_registered":
                 user_id = payload.get("user_id")
                 if user_id:
                     logger.info(f"Processing UserRegistered event for user_id: {user_id}")
                     await onboarding_service.send_welcome_message(user_id)
                     return  # Success
 
-            elif event_name == AchievementUnlocked.event_name:
+            elif event_name == "achievement_unlocked":
                 user_id = payload.get("user_id")
                 achievement_name = payload.get("achievement_name")
                 reward_points = payload.get("reward_points")
