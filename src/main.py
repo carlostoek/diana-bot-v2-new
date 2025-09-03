@@ -74,7 +74,7 @@ async def main() -> None:
     await asyncio.gather(
         start_bot(bot, dispatcher),
         event_listener(redis_client, service_provider),
-
+    )
 
 if __name__ == "__main__":
     asyncio.run(main())
