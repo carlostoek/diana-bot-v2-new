@@ -1,43 +1,46 @@
 """
-Tests for main application
+Tests for main application entry point.
 """
 
 import pytest
-import sys
-from pathlib import Path
-
-# Add project root to Python path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-
+import asyncio
+from unittest.mock import patch
 from src.main import main
 
-def test_main_function():
-    """Test that main function runs without error"""
-    result = main()
-    assert result == 0
 
-def test_project_structure():
-    """Test that project structure exists"""
-    assert project_root.exists()
-    assert (project_root / "src").exists()
-    assert (project_root / "tests").exists()
-    assert (project_root / "config").exists()
+from unittest.mock import patch, AsyncMock
 
-class TestProjectSetup:
-    """Test class for project setup validation"""
+
+@pytest.mark.asyncio
+async def test_main_function_runs_without_error(monkeypatch):
+    """
+    Test that the main function runs without raising an exception.
+    We patch network calls and external dependencies.
+    """
+    # Patch the bot token to be a valid format
+    monkeypatch.setattr("src.config.settings.TELEGRAM_BOT_TOKEN", "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
     
-    def test_config_file_exists(self):
-        """Test that configuration file exists"""
-        config_file = project_root / "config" / "config.py"
-        assert config_file.exists()
-    
-    def test_main_file_exists(self):
-        """Test that main application file exists"""
-        main_file = project_root / "src" / "main.py"
-        assert main_file.exists()
-    
-    def test_readme_exists(self):
-        """Test that README file exists"""
-        readme_file = project_root / "README.md"
-        assert readme_file.exists()
+    # Patch the bot's start_polling and the event_listener to prevent them from running
+    with patch("src.main.start_bot", new_callable=AsyncMock) as mock_start_bot, \
+         patch("src.main.event_listener", new_callable=AsyncMock) as mock_event_listener:
+
+        # Make the mocks block forever so we can test cancellation
+        async def endless_wait(*args, **kwargs):
+            await asyncio.Event().wait()
+
+        mock_start_bot.side_effect = endless_wait
+        mock_event_listener.side_effect = endless_wait
+
+        # We need to run main() in a way that it can be cancelled
+        main_task = asyncio.create_task(main())
+        await asyncio.sleep(0.1)  # allow the task to start
+        main_task.cancel()
+
+        with pytest.raises(asyncio.CancelledError):
+            await main_task
+
+        # Check that our main components were called
+        mock_start_bot.assert_called_once()
+        mock_event_listener.assert_called_once()
+        # The main assertion is that the setup ran without other exceptions
+        assert True

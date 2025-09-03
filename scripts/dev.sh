@@ -15,6 +15,12 @@ if [[ -f requirements.txt ]]; then
     echo "✅ Dependencies installed"
 fi
 
+# Run database migrations
+echo "⚙️ Running database migrations..."
+alembic upgrade head
+echo "✅ Database is up to date"
+
 # Run application in development mode
 export ENVIRONMENT=development
-python src/main.py
+echo "🤖 Starting the bot..."
+python -m src.main
