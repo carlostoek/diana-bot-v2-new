@@ -45,3 +45,37 @@ async def test_main_function_runs_without_error(monkeypatch):
         mock_event_listener.assert_called_once()
         # The main assertion is that the setup ran without other exceptions
         assert True
+
+
+@pytest.mark.asyncio
+async def test_dispatcher_setup_includes_all_services(monkeypatch):
+    """
+    Verify that all required services are injected into the Dispatcher context.
+    """
+    monkeypatch.setattr("src.config.settings.TELEGRAM_BOT_TOKEN", "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11")
+
+    with patch("src.main.start_bot", new_callable=AsyncMock) as mock_start_bot, \
+         patch("src.main.event_listener", new_callable=AsyncMock) as mock_event_listener:
+
+        async def endless_wait(*args, **kwargs):
+            await asyncio.Event().wait()
+
+        mock_start_bot.side_effect = endless_wait
+        mock_event_listener.side_effect = endless_wait
+
+        main_task = asyncio.create_task(main())
+        await asyncio.sleep(0.1)
+        main_task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await main_task
+
+        mock_start_bot.assert_called_once()
+
+        # Get the dispatcher instance passed to start_bot
+        call_args, _ = mock_start_bot.call_args
+        dispatcher = call_args[1]
+
+        # Assert that all expected services are in the dispatcher's context
+        assert "gamification_service" in dispatcher.workflow_data
+        assert "context_service" in dispatcher.workflow_data
+        assert "personalization_service" in dispatcher.workflow_data
