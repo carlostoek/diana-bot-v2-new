@@ -1,6 +1,6 @@
 from typing import Tuple
 from aiogram import types as tg_types
-from src.domain.models import User
+from src.domain.models import User, UserProfile
 from src.infrastructure.uow import IUnitOfWork
 from src.domain.events import UserRegistered
 from src.infrastructure.event_bus import EventPublisher
@@ -55,6 +55,10 @@ class UserService:
             username=telegram_user.username,
         )
         await uow.users.add(new_user)
+
+        # Create a default profile for the new user
+        new_profile = UserProfile(user_id=new_user.id)
+        await uow.user_profiles.add(new_profile)
 
         # Publish an event for the new user registration
         event = UserRegistered(

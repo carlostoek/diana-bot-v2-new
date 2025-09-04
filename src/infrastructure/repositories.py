@@ -33,7 +33,7 @@ class SQLAlchemyRepository(Generic[ModelType]):
         await self._session.flush()
 
 
-from src.domain.models import User, Wallet, Transaction, Achievement
+from src.domain.models import User, Wallet, Transaction, Achievement, UserProfile
 
 
 class UserRepository(SQLAlchemyRepository[User]):
@@ -97,3 +97,11 @@ class UserAchievementRepository(SQLAlchemyRepository[UserAchievement]):
             select(self._model).filter_by(user_id=user_id, achievement_id=achievement_id)
         )
         return result.scalars().first()
+
+
+class UserProfileRepository(SQLAlchemyRepository[UserProfile]):
+    """
+    Repository for the UserProfile model.
+    """
+    def __init__(self, session: AsyncSession):
+        super().__init__(session, UserProfile)

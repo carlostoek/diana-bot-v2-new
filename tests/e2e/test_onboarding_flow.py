@@ -35,6 +35,8 @@ async def test_full_onboarding_flow(mock_publish, session_factory):
     uow_provider = container.infrastructure.uow
     user_service = container.services.user_service()
     gamification_service = container.services.gamification_service()
+    context_service = container.services.context_service()
+    personalization_service = container.services.personalization_service()
 
     uow_middleware = UoWMiddleware(container.infrastructure.uow)
     auth_middleware = AuthMiddleware(user_service, gamification_service)
@@ -43,6 +45,8 @@ async def test_full_onboarding_flow(mock_publish, session_factory):
     dp.update.outer_middleware.register(uow_middleware)
     dp.update.outer_middleware.register(auth_middleware)
     dp["gamification_service"] = gamification_service
+    dp["context_service"] = context_service
+    dp["personalization_service"] = personalization_service
     dp.message.register(start_handler, CommandStart())
 
     # Seed the database with an achievement
@@ -93,12 +97,16 @@ async def test_returning_user_flow(mock_publish, session_factory):
     uow_provider = container.infrastructure.uow
     user_service = container.services.user_service()
     gamification_service = container.services.gamification_service()
+    context_service = container.services.context_service()
+    personalization_service = container.services.personalization_service()
     uow_middleware = UoWMiddleware(uow_provider)
     auth_middleware = AuthMiddleware(user_service, gamification_service)
     dp = Dispatcher()
     dp.update.outer_middleware.register(uow_middleware)
     dp.update.outer_middleware.register(auth_middleware)
     dp["gamification_service"] = gamification_service
+    dp["context_service"] = context_service
+    dp["personalization_service"] = personalization_service
     dp.message.register(start_handler, CommandStart())
 
     # 2. Seed the database with an existing user from yesterday

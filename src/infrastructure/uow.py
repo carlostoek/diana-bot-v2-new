@@ -10,6 +10,7 @@ from src.infrastructure.repositories import (
     TransactionRepository,
     AchievementRepository,
     UserAchievementRepository,
+    UserProfileRepository,
 )
 
 
@@ -19,6 +20,7 @@ class IUnitOfWork(ABC):
     transactions: TransactionRepository
     achievements: AchievementRepository
     user_achievements: UserAchievementRepository
+    user_profiles: UserProfileRepository
 
     @abstractmethod
     async def __aenter__(self):
@@ -49,6 +51,7 @@ class UnitOfWork(IUnitOfWork):
         self.transactions = TransactionRepository(self.session)
         self.achievements = AchievementRepository(self.session)
         self.user_achievements = UserAchievementRepository(self.session)
+        self.user_profiles = UserProfileRepository(self.session)
 
         return self
 

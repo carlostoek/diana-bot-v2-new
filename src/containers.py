@@ -25,6 +25,7 @@ from src.infrastructure.repositories import (
     TransactionRepository,
     AchievementRepository,
     UserAchievementRepository,
+    UserProfileRepository,
 )
 from src.infrastructure.uow import UnitOfWork
 
@@ -74,6 +75,11 @@ class InfrastructureContainer(containers.DeclarativeContainer):
         session=session_factory,
     )
 
+    user_profile_repository = providers.Factory(
+        UserProfileRepository,
+        session=session_factory,
+    )
+
     uow = providers.Factory(
         UnitOfWork,
         session_factory=session_factory,
@@ -119,6 +125,8 @@ from src.services.user_service import UserService
 from src.services.onboarding_service import OnboardingService
 from src.services.gamification_service import GamificationService
 from src.services.notification_service import NotificationService
+from src.services.context_service import ContextService
+from src.services.personalization_service import PersonalizationService
 
 
 class ServiceContainer(containers.DeclarativeContainer):
@@ -146,6 +154,14 @@ class ServiceContainer(containers.DeclarativeContainer):
     gamification_service = providers.Factory(
         GamificationService,
         event_publisher=infrastructure.event_publisher,
+    )
+
+    context_service = providers.Factory(
+        ContextService,
+    )
+
+    personalization_service = providers.Factory(
+        PersonalizationService,
     )
 
 
