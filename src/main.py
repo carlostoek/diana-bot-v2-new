@@ -64,11 +64,15 @@ async def main() -> None:
 
     # Get services
     gamification_service = container.services.gamification_service()
+    context_service = container.services.context_service()
+    personalization_service = container.services.personalization_service()
     redis_client = container.infrastructure.redis_client()
     service_provider = container.services
 
     # Pass long-lived services to the dispatcher context
     dispatcher["gamification_service"] = gamification_service
+    dispatcher["context_service"] = context_service
+    dispatcher["personalization_service"] = personalization_service
 
     # Start the bot and the event listener concurrently
     await asyncio.gather(
