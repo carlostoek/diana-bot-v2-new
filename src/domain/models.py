@@ -8,8 +8,10 @@ from sqlalchemy import (
     Enum,
     String,
     func,
+    ForeignKey,
+    Integer,
 )
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
@@ -20,8 +22,21 @@ class UserRole(enum.Enum):
     ADMIN = "admin"
 
 
-from sqlalchemy import ForeignKey, Integer
-from sqlalchemy.orm import relationship
+class UserMood(str, enum.Enum):
+    NEUTRAL = "neutral"
+    HAPPY = "happy"
+    SAD = "sad"
+    ANGRY = "angry"
+    CURIOUS = "curious"
+    REFLECTIVE = "reflective"
+
+
+class UserArchetype(str, enum.Enum):
+    EXPLORER = "explorer"
+    ACHIEVER = "achiever"
+    SOCIALIZER = "socializer"
+    PHILOSOPHER = "philosopher"
+    CREATOR = "creator"
 
 
 class User(Base):
@@ -47,11 +62,28 @@ class User(Base):
     wallet = relationship("Wallet", back_populates="user", uselist=False, cascade="all, delete-orphan")
     transactions = relationship("Transaction", back_populates="user", cascade="all, delete-orphan")
     achievements = relationship("UserAchievement", back_populates="user", cascade="all, delete-orphan")
+    profile = relationship("UserProfile", back_populates="user", uselist=False, cascade="all, delete-orphan")
 
     def __repr__(self) -> str:
         return (
             f"<User(id={self.id}, username='{self.username}', role='{self.role.value}')>"
         )
+
+
+class UserProfile(Base):
+    __tablename__ = "user_profiles"
+
+    user_id: int = Column(BigInteger, ForeignKey("users.id"), primary_key=True)
+    mood: UserMood = Column(Enum(UserMood), default=UserMood.NEUTRAL, nullable=False)
+    archetype: UserArchetype = Column(
+        Enum(UserArchetype), default=UserArchetype.EXPLORER, nullable=False
+    )
+    engagement_score: int = Column(Integer, default=0, nullable=False)
+
+    user = relationship("User", back_populates="profile")
+
+    def __repr__(self) -> str:
+        return f"<UserProfile(user_id={self.user_id}, mood='{self.mood.value}', archetype='{self.archetype.value}')>"
 
 
 class Wallet(Base):
